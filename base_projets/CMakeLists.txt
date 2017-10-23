@@ -53,4 +53,3 @@ file(
 
 add_executable(projet  ${shader_file} ${source_files} )
 target_link_libraries(projet ${ALL_LIBS})
-
