@@ -6,7 +6,7 @@
 #include <shader.h> // Help to load shaders from files
 
 // Include GLEW : Always include it before glfw.h et gl.h :)
-#include <GL/glew.h>    // OpenGL Extension Wrangler Library : http://glew.sourceforge.net/ 
+#include <GL/glew.h>    // OpenGL Extension Wrangler Library : http://glew.sourceforge.net/
 #include <GL/glfw.h>    // Window, keyboard, mouse : http://www.glfw.org/
 
 #include <glm/glm.hpp>  // OpenGL Mathematics : http://glm.g-truc.net/0.9.5/index.html
@@ -130,11 +130,11 @@ int main()
     // Data arrays Initialization
 
     // Mesh creation
-//    Mesh m("../models/triceratops.off");
+    Mesh m("../models/triceratops.off");
 
     BarthFunction bf;
     float x = 1.8;
-    Mesh m; m.CreateIsoSurface(m, bf, -0.2, -x, x, -x, x, -x ,x, 100, 100, 100);
+    //Mesh m; m.CreateIsoSurface(m, bf, -0.2, -x, x, -x, x, -x ,x, 100, 100, 100);
 
 //    m.Normalize();
 //    m.ComputeNormals();
@@ -159,12 +159,12 @@ int main()
 
     GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");
     cout << "VmatrixID = " << VmatrixID << endl;
-    
+
 
 
     cout << "Initializing done." << endl;
     cout << endl;
-    
+
 
 
     //==================================================
@@ -399,5 +399,3 @@ void mouse_button_callback(int button, int action)
 {
     mouse_pressed = !mouse_pressed;
 }
-
-
