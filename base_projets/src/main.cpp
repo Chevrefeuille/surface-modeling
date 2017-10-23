@@ -52,7 +52,7 @@ int main()
     cout << "Starting program..." << endl;
 
     //==================================================
-    //============= Creation de la fenetre =============
+    //============= Creation de la fenetre!! =============
     //==================================================
 
     // GLFW initialization
