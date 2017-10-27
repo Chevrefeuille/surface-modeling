@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <math.h>
-#include <omp.h>
+#include "omp.h"
 
 #include <Mesh.h>
 #include <ImplicitFunction.h>
