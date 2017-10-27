@@ -20,9 +20,11 @@ public:
 protected:
     // Attributes
     int m_N;                                    /// Number of points in the set
+    int m_K;
     std::vector<glm::vec3> m_points;             /// Container for the vertices positions
     std::vector<Plane> m_tangentPlanes;
-    std::vector<std::vector<double> > m_distances;
+
+    std::vector<glm::vec3> ComputeNhbd(glm::vec3 x); 
 };
 
 
