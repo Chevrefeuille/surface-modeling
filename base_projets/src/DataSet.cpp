@@ -78,8 +78,8 @@ std::vector<glm::vec3> DataSet::ComputeNhbd(glm::vec3 x) {
 	// extracting k nearest neighbors
 	std::vector<glm::vec3> Nhbd(m_K);		
 	for (int i = 1; i < m_K + 1; i++) { // skiping first element which is the point itself (at distance 0)
-		Nhbd[i] = points_and_distances[i].point;
-		// std::cout << "-" << points_and_distances[i].point[0] << ", " << points_and_distances[i].point[1] << ", " << points_and_distances[i].point[2] << " ==> " << points_and_distances[i].distance << std::endl;		
+		Nhbd[i-1] = points_and_distances[i].point;
+		// std::cout << "-" << Nhbd[i-1][0] << ", " << Nhbd[i-1][1] << ", " << Nhbd[i-1][2] << " ==> " << points_and_distances[i].distance << std::endl;		
 	}
 	return Nhbd;
 }
@@ -88,7 +88,7 @@ glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 	glm::vec3 o;
 	for (int i = 0; i < m_K; i++) {
 		glm::vec3 x2 = points[i];
-		// std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << std::endl;				
+		// std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << std::endl;			
 		o += x2;
 	}
 	o /= m_K;

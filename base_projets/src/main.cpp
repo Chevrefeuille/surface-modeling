@@ -14,7 +14,7 @@ using namespace std;
 int main()
 {
     // Mesh creation
-    DataSet ds("../data/sphere.data");
+    DataSet ds("../data/test.data");
     ds.ComputeTangentPlanes();
 
     return EXIT_SUCCESS;
