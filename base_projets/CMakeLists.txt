@@ -20,12 +20,13 @@ include_directories(
         external/glfw-2.7.6/include/
         external/glm-0.9.4.0/
         external/glew-1.9.0/include/
+        external/eigen-3.3.4/
 )
 
 
 set(ALL_LIBS
 	GLFW_276
-        GLEW_190
+    GLEW_190
 )
 
 add_definitions(

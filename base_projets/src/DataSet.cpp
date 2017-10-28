@@ -2,10 +2,10 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
+#include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 
 #include <DataSet.h>
-
-using namespace std;
 
 struct POINT_AND_DISTANCE {    
     glm::vec3 point;  
@@ -29,7 +29,7 @@ DataSet::DataSet(const char* filename) :
 	}
 
 	// create mesh
-    m_points = vector<vec3>();
+    m_points = std::vector<glm::vec3>();
 
 	error = fscanf(file, "%d\n", &(nb_points));
 	if(error == EOF) {
@@ -92,11 +92,37 @@ glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 		o += x2;
 	}
 	o /= m_K;
-	std::cout << o[0] << std::endl;
+	// std::cout << o[0] << std::endl;
 	return o;
 }
 
+glm::vec3 DataSet::ComputeTangent(std::vector<glm::vec3> points, glm::vec3 o) {
+	// compute covariance matrix
+	Eigen::MatrixXd CV(3, 3);
+	CV << 0.0,0.0,0.0,
+	0.0,0.0,0.0,
+	0.0,0.0,0.0;
+	for (glm::vec3 y : points) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {	
+				CV(i, j) += (y[i] - o[i]) * (y[j] - o[j]);
+			}
+		}
+	}
+	//std::cout << CV << std::endl;
+	// compute eigenvalues of the covariance matrix
+	Eigen::EigenSolver<Eigen::MatrixXd> es(CV);
+	//std::cout << "The eigenvalues of CV are:" << std::endl << es.eigenvalues() << std::endl;
+	//std::cout << "The matrix of eigenvectors, V, is:" << std::endl << es.eigenvectors() << std::endl << std::endl;
 
+	// extract the third eigen vector
+	Eigen::VectorXcd v = es.eigenvectors().col(2);
+	glm::vec3 n(3);
+	for (int i = 0; i < 3; i++) {
+		n[i] = v(i).real();
+	}
+	return n;
+}
 
 
 Plane DataSet::ComputeTangentPlanes() {
@@ -105,6 +131,10 @@ Plane DataSet::ComputeTangentPlanes() {
 	for (int i = 0; i < m_N; i++) {
 		// std::cout << m_points[i][0] << ", " << m_points[i][1] << ", " << m_points[i][2] << " => " << std::endl;
 		Nhbd = ComputeNhbd(m_points[i]);
-		glm::vec3 o = ComputeCentroid(Nhbd);	
+		glm::vec3 o = ComputeCentroid(Nhbd);
+		glm::vec3 n = ComputeTangent(Nhbd, o);
+		std::cout << "Centroid : " << o[0] << ", " << o[1] << ", " << o[2] << std::endl;
+		std::cout << "Tangent : " << n[0] << ", " << n[1] << ", " << n[2] << std::endl;
+		std::cout << "-------" << std::endl;
 	} 
 }

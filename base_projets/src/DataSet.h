@@ -26,6 +26,7 @@ protected:
 
     std::vector<glm::vec3> ComputeNhbd(glm::vec3 x); 
     glm::vec3 ComputeCentroid(std::vector<glm::vec3>);
+    glm::vec3 ComputeTangent(std::vector<glm::vec3>, glm::vec3 o);    
         
 };
 
