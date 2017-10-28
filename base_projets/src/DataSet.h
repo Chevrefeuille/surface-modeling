@@ -25,6 +25,8 @@ protected:
     std::vector<Plane> m_tangentPlanes;
 
     std::vector<glm::vec3> ComputeNhbd(glm::vec3 x); 
+    glm::vec3 ComputeCentroid(std::vector<glm::vec3>);
+        
 };
 
 
