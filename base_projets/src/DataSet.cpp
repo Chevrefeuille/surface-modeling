@@ -133,8 +133,10 @@ Plane DataSet::ComputeTangentPlanes() {
 		Nhbd = ComputeNhbd(m_points[i]);
 		glm::vec3 o = ComputeCentroid(Nhbd);
 		glm::vec3 n = ComputeTangent(Nhbd, o);
-		std::cout << "Centroid : " << o[0] << ", " << o[1] << ", " << o[2] << std::endl;
-		std::cout << "Tangent : " << n[0] << ", " << n[1] << ", " << n[2] << std::endl;
-		std::cout << "-------" << std::endl;
+		// std::cout << "Centroid : " << o[0] << ", " << o[1] << ", " << o[2] << std::endl;
+		// std::cout << "Tangent : " << n[0] << ", " << n[1] << ", " << n[2] << std::endl;
+		// std::cout << "-------" << std::endl;
+		Plane tangentPlane(o, n);
+		m_tangentPlanes[i] = tangentPlane;
 	} 
 }
