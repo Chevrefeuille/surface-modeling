@@ -9,6 +9,7 @@
 #include <AbstractMesh.h>
 
 class ImplicitFunction;
+class DataSet;
 
 class Mesh : public AbstractMesh
 {
@@ -17,9 +18,6 @@ public:
     // Constructors
     Mesh(){}                        /// Empty constructor
     Mesh(const char* filename);     /// Imports a mesh from an OFF File
-
-
-
 
     // utils
     void RemoveDouble(float epsilon = 1e-5);        /// Remove duplicated points
@@ -43,6 +41,10 @@ public:
 
     static void ProcessTetrahedron(Mesh& mesh, const ImplicitFunction& function, const float isoValue, const glm::vec3 p[]);        /// Processes a tetrahedron during marching tetrahedron algorithm
 
+
+    // *** Mesh creation adapted to a DataSet *** //
+    Mesh(const DataSet& dataSet, const ImplicitFunction& function); /// imports a mesh from a DataSet and a function
+    void postProcess(); // Collapse Edges using an aspect ratio criterion
 };
 
 #endif // MESH_H

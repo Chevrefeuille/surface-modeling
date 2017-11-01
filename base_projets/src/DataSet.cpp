@@ -24,6 +24,8 @@ DataSet::DataSet(const char* filename) :
 	int error;
     int nb_points;
 
+    min_X=0.0; min_Y=0.0; min_Z=0.0; max_X=0.0; max_Y=0.0; max_Z=0.0;
+
 	if ((file = fopen(filename, "r")) == NULL) {
 		std::cout << "Unable to read : " << filename << std::endl;
 	}
@@ -46,6 +48,15 @@ DataSet::DataSet(const char* filename) :
 			std::cout << "Unable to read points of : " << filename << std::endl;
 			exit(EXIT_FAILURE);
 		}
+
+		// Setting min/max coord
+		if (m_points[i][0]<min_X) {min_X=m_points[i][0];}
+		if (m_points[i][0]>max_X) {max_X=m_points[i][0];}
+		if (m_points[i][1]<min_Y) {min_Y=m_points[i][1];}
+		if (m_points[i][1]>max_Y) {max_Y=m_points[i][1];}
+		if (m_points[i][2]<min_Z) {min_Z=m_points[i][2];}
+		if (m_points[i][2]>max_Z) {max_Z=m_points[i][2];}
+
 	}
 	
 	// for (int i = 0; i < m_N; i++) {
