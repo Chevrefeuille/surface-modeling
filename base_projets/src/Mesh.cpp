@@ -10,65 +10,39 @@
 using namespace glm;
 using namespace std;
 
+/**
+ * Réalise nb_itérations itérations de dichotomie, afin de trouver l'isovalue de function sur [p0, p1]
+ */
+vec3 findRoot(const ImplicitFunction& function, const float isoValue, const vec3& p0, const vec3& p1, unsigned nb_iter = 10)
+{
+    vec3 p00 = p0;
+    vec3 p10 = p1;
+    if(function.Eval(p0) > function.Eval(p1))
+    {
+        swap(p00, p10);
+    }
 
-Mesh::Mesh(const DataSet& dataSet, const ImplicitFunction& function) {
-	m_positions = vector<vec3>();
-	m_normals  = vector<vec3>();
-	m_indices    = vector<unsigned int>();
-	const unsigned int resX = 100;
-	const unsigned int resY = 100;
-	const unsigned int resZ = 100;
+    vec3 p = 0.5f*(p00+p10);
+    for(unsigned int iter = 0; iter < nb_iter; iter++)
+    {
+        if(function.Eval(p) > isoValue)
+        {
+            p10 = 0.5f * (p00 + p10);
+        }
+        else
+        {
+            p00 = 0.5f * (p00 + p10);
+        }
 
-	double minX = dataSet.minX(); double minY = dataSet.minY(); double minZ = dataSet.minZ();
-	double maxX = dataSet.maxX(); double maxY = dataSet.maxY(); double maxZ = dataSet.maxZ();
-	minX-=2*(maxX-minX)/resX; minY-=2*(maxY-minY)/resY; minZ-=2*(maxZ-minZ)/resZ;
-	maxX+=2*(maxX-minX)/resX; maxY+=2*(maxY-minY)/resY; maxZ+=2*(maxZ-minZ)/resZ;
+        p = 0.5f*(p00+p10);
+    }
 
-	// Boucles correspondant au marching cubes (découpage en cubes)
-	for(unsigned int i=0; i < resX; i++) {
-		float x0 = float(i  )/resX * (maxX - minX) + minX;
-		float x1 = float(i+1)/resX * (maxX - minX) + minX;
-		for(unsigned int j=0; j < resY; j++) {
-			float y0 = float(j  )/resY * (maxY - minY) + minY;
-			float y1 = float(j+1)/resY * (maxY - minY) + minY;
-			for(unsigned int k=0; k < resZ; k++) {
-				float z0 = float(k  )/resZ * (maxZ - minZ) + minZ;
-				float z1 = float(k+1)/resZ * (maxZ - minZ) + minZ;
-
-				// Les 8 points du cube défini par (i,j,k)
-				vec3 p000 = vec3(x0, y0, z0);
-				vec3 p001 = vec3(x1, y0, z0);
-				vec3 p010 = vec3(x0, y1, z0);
-				vec3 p011 = vec3(x1, y1, z0);
-				vec3 p100 = vec3(x0, y0, z1);
-				vec3 p101 = vec3(x1, y0, z1);
-				vec3 p110 = vec3(x0, y1, z1);
-				vec3 p111 = vec3(x1, y1, z1);
-
-				// Découpage du cube en 6 tétrahèdres (définis chacun par 4 points)
-				vec3 p0[4] =  {p000, p001, p011, p111};
-				vec3 p1[4] =  {p000, p011, p010, p111};
-				vec3 p2[4] =  {p000, p010, p110, p111};
-				vec3 p3[4] =  {p000, p110, p100, p111};
-				vec3 p4[4] =  {p000, p100, p101, p111};
-				vec3 p5[4] =  {p000, p101, p001, p111};
-
-				// Interpolations linéaires sur chaque tétrahèdre
-				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p0);
-				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p1);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p2);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p3);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p4);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p5);
-			}
-		}
-	}
+    return p;
 }
 
-void Mesh::postProcess() {
-	//TODO
-}
-
+/**
+ * Calcule les points approchant l'isovalue de function sur le tétrahèdre défini par les 4 points de p[]
+ */
 void ProcessTetrahedron2(vector<vec3> vecPositions,
 		vector<vec3> vecNormals,
 		vector<uint> vecIndices,
@@ -189,6 +163,61 @@ void ProcessTetrahedron2(vector<vec3> vecPositions,
 	}
 	cerr << "no solution found in marching tetrahedron !!" << endl;
 
+}
+
+/**
+ * Construit un mesh défini par son iso fonction, les coord limites du marching cubes et sa résolution
+ */
+Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double minY, double maxY,
+		double minZ, double maxZ, const unsigned int resX, const unsigned int resY,
+		const unsigned int resZ) {
+	m_positions = vector<vec3>();
+	m_normals  = vector<vec3>();
+	m_indices    = vector<unsigned int>();
+
+	// Boucles correspondant au marching cubes (découpage en cubes)
+	for(unsigned int i=0; i < resX; i++) {
+		float x0 = float(i  )/resX * (maxX - minX) + minX;
+		float x1 = float(i+1)/resX * (maxX - minX) + minX;
+		for(unsigned int j=0; j < resY; j++) {
+			float y0 = float(j  )/resY * (maxY - minY) + minY;
+			float y1 = float(j+1)/resY * (maxY - minY) + minY;
+			for(unsigned int k=0; k < resZ; k++) {
+				float z0 = float(k  )/resZ * (maxZ - minZ) + minZ;
+				float z1 = float(k+1)/resZ * (maxZ - minZ) + minZ;
+
+				// Les 8 points du cube défini par (i,j,k)
+				vec3 p000 = vec3(x0, y0, z0);
+				vec3 p001 = vec3(x1, y0, z0);
+				vec3 p010 = vec3(x0, y1, z0);
+				vec3 p011 = vec3(x1, y1, z0);
+				vec3 p100 = vec3(x0, y0, z1);
+				vec3 p101 = vec3(x1, y0, z1);
+				vec3 p110 = vec3(x0, y1, z1);
+				vec3 p111 = vec3(x1, y1, z1);
+
+				// Découpage du cube en 6 tétrahèdres (définis chacun par 4 points)
+				vec3 p0[4] =  {p000, p001, p011, p111};
+				vec3 p1[4] =  {p000, p011, p010, p111};
+				vec3 p2[4] =  {p000, p010, p110, p111};
+				vec3 p3[4] =  {p000, p110, p100, p111};
+				vec3 p4[4] =  {p000, p100, p101, p111};
+				vec3 p5[4] =  {p000, p101, p001, p111};
+
+				// Marching tetrahedra
+				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p0);
+				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p1);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p2);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p3);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p4);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p5);
+			}
+		}
+	}
+}
+
+void Mesh::postProcess() {
+	//TODO
 }
 
 
@@ -601,33 +630,6 @@ void Mesh::CreateIsoSurface(  Mesh& mesh
         }
     }
 
-}
-
-vec3 findRoot(const ImplicitFunction& function, const float isoValue, const vec3& p0, const vec3& p1, unsigned nb_iter = 10)
-{
-    vec3 p00 = p0;
-    vec3 p10 = p1;
-    if(function.Eval(p0) > function.Eval(p1))
-    {
-        swap(p00, p10);
-    }
-
-    vec3 p = 0.5f*(p00+p10);
-    for(unsigned int iter = 0; iter < nb_iter; iter++)
-    {
-        if(function.Eval(p) > isoValue)
-        {
-            p10 = 0.5f * (p00 + p10);
-        }
-        else
-        {
-            p00 = 0.5f * (p00 + p10);
-        }
-
-        p = 0.5f*(p00+p10);
-    }
-
-    return p;
 }
 
 void Mesh::ProcessTetrahedron(Mesh& mesh, const ImplicitFunction& function, const float isoValue, const vec3 p[])

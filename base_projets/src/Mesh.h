@@ -42,8 +42,10 @@ public:
     static void ProcessTetrahedron(Mesh& mesh, const ImplicitFunction& function, const float isoValue, const glm::vec3 p[]);        /// Processes a tetrahedron during marching tetrahedron algorithm
 
 
-    // *** Mesh creation adapted to a DataSet *** //
-    Mesh(const DataSet& dataSet, const ImplicitFunction& function); /// imports a mesh from a DataSet and a function
+    // *** Mesh creation adapted to an isofuntion *** //
+    Mesh(const ImplicitFunction& function, double minX, double maxX, double minY, double maxY,
+    		double minZ, double maxZ, const unsigned int resX = 100, const unsigned int resY=100,
+    		const unsigned int resZ=100); /// imports a mesh from an isofunction, coord limits and resolution
     void postProcess(); // Collapse Edges using an aspect ratio criterion
 };
 

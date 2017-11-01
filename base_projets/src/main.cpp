@@ -19,10 +19,19 @@ int main()
     DataSet ds("../data/test.data");
     ds.ComputeTangentPlanes();
 
-    // Mesh creation from data set and iso function
     ImplicitFunction f();
-    //Mesh m(ds, f);
-    //m.postProcess();
+
+    // ** Mesh creation from data set and iso function ** //
+	double minX = ds.minX(); double minY = ds.minY(); double minZ = ds.minZ();
+	double maxX = ds.maxX(); double maxY = ds.maxY(); double maxZ = ds.maxZ();
+	const unsigned int resX=100;
+	const unsigned int resY=100;
+	const unsigned int resZ=100;
+	minX-=2*(maxX-minX)/resX; minY-=2*(maxY-minY)/resY; minZ-=2*(maxZ-minZ)/resZ;
+	maxX+=2*(maxX-minX)/resX; maxY+=2*(maxY-minY)/resY; maxZ+=2*(maxZ-minZ)/resZ;
+
+    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    m.postProcess();
 
     return EXIT_SUCCESS;
 }
