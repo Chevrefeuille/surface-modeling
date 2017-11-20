@@ -46,7 +46,7 @@ public:
     Mesh(const ImplicitFunction& function, double minX, double maxX, double minY, double maxY,
     		double minZ, double maxZ, const unsigned int resX = 100, const unsigned int resY=100,
     		const unsigned int resZ=100); /// imports a mesh from an isofunction, coord limits and resolution
-    void postProcess(); // Collapse Edges using an aspect ratio criterion
+    Mesh postProcess(); // Collapse Edges using an aspect ratio criterion
 };
 
 #endif // MESH_H

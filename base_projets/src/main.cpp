@@ -31,7 +31,7 @@ int main()
 	maxX+=2*(maxX-minX)/resX; maxY+=2*(maxY-minY)/resY; maxZ+=2*(maxZ-minZ)/resZ;
 
     Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-    m.postProcess();
+    Mesh m2 = m.postProcess();
 
     return EXIT_SUCCESS;
 }
