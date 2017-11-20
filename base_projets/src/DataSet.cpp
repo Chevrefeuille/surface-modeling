@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
-#include <DataSet.h>
+#include "DataSet.h"
 
 struct POINT_AND_DISTANCE {    
     glm::vec3 point;  
@@ -139,4 +139,8 @@ Plane DataSet::ComputeTangentPlanes() {
 		Plane tangentPlane(o, n);
 		m_tangentPlanes[i] = tangentPlane;
 	} 
+}
+
+vector<glm::vec3> DataSet::ComputeTriangulation() {
+
 }
