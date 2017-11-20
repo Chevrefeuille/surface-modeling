@@ -1,14 +1,19 @@
 #include "Graph.h"
 
+Graph::Graph()
+{
+  work = new vertices_map();
+}
+
 void Graph::addVertex(const glm::vec3& coordinates)
 {
-    auto search = work.find(coordinates);
-    if (search == work.end())
+    vertices_map::iterator search = (*work).find(coordinates);
+    if (search == (*work).end())
     {
         std::cout << "New Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ")" << std::endl;
         vertex *v;
         v = new vertex(coordinates);
-        work[coordinates] = v;
+        (*work)[coordinates] = v;
         return;
     }
     std::cout << "Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ") already exists!" << std::endl;
@@ -16,8 +21,8 @@ void Graph::addVertex(const glm::vec3& coordinates)
 
 void Graph::addEdge(const glm::vec3& from, const glm::vec3& to, double cost)
 {
-    vertices_map::iterator itr = work.find(from);
-    if (!(itr == work.end())) {
+    vertices_map::iterator itr = (*work).find(from);
+    if (!(itr == (*work).end())) {
         glm::vec3 c = itr->second->coordinates;
         //std::cout << c.y << std::endl;
         //std::cout << "found" << std::endl;
