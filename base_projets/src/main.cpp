@@ -4,10 +4,10 @@
 #include <string>
 #include <glm/glm.hpp>
 
-
 #include "DataSet.h"
 #include "Mesh.h"
 #include "ImplicitFunction.h"
+
 
 using namespace glm;
 using namespace std;
@@ -18,6 +18,13 @@ int main()
     // Data Set creation
     DataSet ds("../data/test.data");
     ds.ComputeTangentPlanes();
+
+    glm::vec3 v(0,0,0);
+    glm::vec3 v2(0,0,1);
+    //ds.m[v] = 23;
+
+    //std::cout << ds.m[v] << '\n';
+
 
     ImplicitFunction f();
 
@@ -30,8 +37,8 @@ int main()
 	minX-=2*(maxX-minX)/resX; minY-=2*(maxY-minY)/resY; minZ-=2*(maxZ-minZ)/resZ;
 	maxX+=2*(maxX-minX)/resX; maxY+=2*(maxY-minY)/resY; maxZ+=2*(maxZ-minZ)/resZ;
 
-    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-    m.postProcess();
+    //Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    //m.postProcess();
 
     return EXIT_SUCCESS;
 }

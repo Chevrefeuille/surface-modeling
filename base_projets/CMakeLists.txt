@@ -5,7 +5,6 @@ project(Base_Projet)
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-#set(CMAKE_CXX_COMPILER "g++-7")
 
 #set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_BUILD_TYPE Debug)
@@ -26,7 +25,7 @@ include_directories(
 
 set(ALL_LIBS
 	GLFW_276
-    GLEW_190
+        GLEW_190
 )
 
 add_definitions(
