@@ -25,8 +25,6 @@ float ImplicitFunction::Eval(glm::vec3 /*p*/) const
 
 vec3 ImplicitFunction::EvalDev(glm::vec3 p) const
 {
-//    cout << "ImplicitFunction::EvalDev : TODO : implementation" << endl;
-
     return EvalDevFiniteDiff(p);
 }
 

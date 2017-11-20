@@ -1,9 +1,0 @@
-
-#ifndef SRC_CONTOUR_TRACING_H_
-#define SRC_CONTOUR_TRACING_H_
-
-
-
-
-
-#endif /* SRC_CONTOUR_TRACING_H_ */

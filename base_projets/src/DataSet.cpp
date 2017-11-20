@@ -7,9 +7,9 @@
 
 #include "DataSet.h"
 
-struct POINT_AND_DISTANCE {    
-    glm::vec3 point;  
-	double distance;  
+struct POINT_AND_DISTANCE {
+    glm::vec3 point;
+	double distance;
 };
 
 bool operator<(const POINT_AND_DISTANCE& a, const POINT_AND_DISTANCE& b)
@@ -23,6 +23,8 @@ DataSet::DataSet(const char* filename) :
 	FILE *file;
 	int error;
     int nb_points;
+
+    min_X=0.0; min_Y=0.0; min_Z=0.0; max_X=0.0; max_Y=0.0; max_Z=0.0;
 
 	if ((file = fopen(filename, "r")) == NULL) {
 		std::cout << "Unable to read : " << filename << std::endl;
@@ -46,10 +48,19 @@ DataSet::DataSet(const char* filename) :
 			std::cout << "Unable to read points of : " << filename << std::endl;
 			exit(EXIT_FAILURE);
 		}
+
+		// Setting min/max coord
+		if (m_points[i][0]<min_X) {min_X=m_points[i][0];}
+		if (m_points[i][0]>max_X) {max_X=m_points[i][0];}
+		if (m_points[i][1]<min_Y) {min_Y=m_points[i][1];}
+		if (m_points[i][1]>max_Y) {max_Y=m_points[i][1];}
+		if (m_points[i][2]<min_Z) {min_Z=m_points[i][2];}
+		if (m_points[i][2]>max_Z) {max_Z=m_points[i][2];}
+
 	}
-	
+
 	// for (int i = 0; i < m_N; i++) {
-	// 	std::cout << "row:" << i << std::endl;		
+	// 	std::cout << "row:" << i << std::endl;
 	// 	for (int j = 0; j < m_N; j++) {
 	// 		std::cout << m_distances[i][j] << std::endl;
 	// 	}
@@ -65,21 +76,21 @@ std::vector<glm::vec3> DataSet::ComputeNhbd(glm::vec3 x) {
 	// computing distances
 	for (int i = 0; i < m_N; i++) {
 		glm::vec3 x2 = m_points[i];
-		double distance = sqrt((x2[0] - x[0]) * (x2[0] - x[0]) + 
+		double distance = sqrt((x2[0] - x[0]) * (x2[0] - x[0]) +
 		(x2[1] - x[1]) * (x2[1] - x[1]) +
 		(x2[2] - x[2]) * (x2[2] - x[2]));
 
-		//std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;		
+		//std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
 		points_and_distances[i].point = x2;
 		points_and_distances[i].distance = distance;
-		
+
 	}
 	std::sort(points_and_distances.begin(), points_and_distances.end());
 	// extracting k nearest neighbors
-	std::vector<glm::vec3> Nhbd(m_K);		
+	std::vector<glm::vec3> Nhbd(m_K);
 	for (int i = 1; i < m_K + 1; i++) { // skiping first element which is the point itself (at distance 0)
 		Nhbd[i-1] = points_and_distances[i].point;
-		// std::cout << "-" << Nhbd[i-1][0] << ", " << Nhbd[i-1][1] << ", " << Nhbd[i-1][2] << " ==> " << points_and_distances[i].distance << std::endl;		
+		// std::cout << "-" << Nhbd[i-1][0] << ", " << Nhbd[i-1][1] << ", " << Nhbd[i-1][2] << " ==> " << points_and_distances[i].distance << std::endl;
 	}
 	return Nhbd;
 }
@@ -88,7 +99,7 @@ glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 	glm::vec3 o;
 	for (int i = 0; i < m_K; i++) {
 		glm::vec3 x2 = points[i];
-		// std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << std::endl;			
+		// std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << std::endl;
 		o += x2;
 	}
 	o /= m_K;
@@ -102,10 +113,10 @@ glm::vec3 DataSet::ComputeTangent(std::vector<glm::vec3> points, glm::vec3 o) {
 	CV << 0.0,0.0,0.0,
 	0.0,0.0,0.0,
 	0.0,0.0,0.0;
-	for (glm::vec3 y : points) {
+    for (int k = 0; k < m_N; k++) {
 		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {	
-				CV(i, j) += (y[i] - o[i]) * (y[j] - o[j]);
+			for (int j = 0; j < 3; j++) {
+				CV(i, j) += (points[k][i] - o[i]) * (points[k][j] - o[j]);
 			}
 		}
 	}
@@ -138,7 +149,7 @@ Plane DataSet::ComputeTangentPlanes() {
 		// std::cout << "-------" << std::endl;
 		Plane tangentPlane(o, n);
 		m_tangentPlanes[i] = tangentPlane;
-	} 
+	}
 }
 
 vector<glm::vec3> DataSet::ComputeTriangulation() {

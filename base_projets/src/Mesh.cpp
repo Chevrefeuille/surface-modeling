@@ -5,11 +5,244 @@
 
 #include <Mesh.h>
 #include <ImplicitFunction.h>
+#include <DataSet.h>
 
 using namespace glm;
 using namespace std;
 
-Mesh::Mesh(const char* filename) 
+/**
+ * Réalise nb_itérations itérations de dichotomie, afin de trouver l'isovalue de function sur [p0, p1]
+ */
+vec3 findRoot(const ImplicitFunction& function, const float isoValue, const vec3& p0, const vec3& p1, unsigned nb_iter = 10)
+{
+    vec3 p00 = p0;
+    vec3 p10 = p1;
+    if(function.Eval(p0) > function.Eval(p1))
+    {
+        swap(p00, p10);
+    }
+
+    vec3 p = 0.5f*(p00+p10);
+    for(unsigned int iter = 0; iter < nb_iter; iter++)
+    {
+        if(function.Eval(p) > isoValue)
+        {
+            p10 = 0.5f * (p00 + p10);
+        }
+        else
+        {
+            p00 = 0.5f * (p00 + p10);
+        }
+
+        p = 0.5f*(p00+p10);
+    }
+
+    return p;
+}
+
+/**
+ * Calcule les points approchant l'isovalue de function sur le tétrahèdre défini par les 4 points de p[]
+ */
+void ProcessTetrahedron2(vector<vec3> vecPositions,
+		vector<vec3> vecNormals,
+		vector<uint> vecIndices,
+		const ImplicitFunction& function, const vec3 p[]) {
+
+	// Vecteur donnant les signes des images par f de chacun des points du tétrahèdre
+	bool b[4] = {function.Eval(p[0]) > 0.0, function.Eval(p[1]) > 0.0, function.Eval(p[2]) > 0.0, function.Eval(p[3]) > 0.0};
+
+	unsigned int N = vecPositions.size();
+
+	// ** Distinction des cas selon le signe des images par f des 4 points du tétrahèdre : ** //
+
+	// 1. 4 positifs (resp 4 négatifs)
+	if((!b[0] && !b[1] && !b[2] && !b[3]) || (b[0] && b[1] && b[2] && b[3])) { return; }
+
+	// 2. 3 positifs et 1 négatif (resp 3 négatifs et 1 positif)
+	for(unsigned int i=0; i<4; i++) {
+		if((b[i] && !b[(i+1)%4] && !b[(i+2)%4] && !b[(i+3)%4]) || (!b[i] && b[(i+1)%4] && b[(i+2)%4] && b[(i+3)%4])) {
+			// Le point i est celui au signe différent des 3 autres
+			// On forme un triangle
+			vec3 p0 = findRoot(function, 0.0, p[i], p[(i+1)%4]);
+			vec3 p1 = findRoot(function, 0.0, p[i], p[(i+2)%4]);
+			vec3 p2 = findRoot(function, 0.0, p[i], p[(i+3)%4]);
+			vecPositions.push_back(p0);
+			vecPositions.push_back(p1);
+			vecPositions.push_back(p2);
+
+			// Choix orientation des normales : -
+			vec3 n0 = glm::normalize(-function.EvalDev(p0));
+			vec3 n1 = glm::normalize(-function.EvalDev(p1));
+			vec3 n2 = glm::normalize(-function.EvalDev(p2));
+			vecNormals.push_back(n0);
+			vecNormals.push_back(n1);
+			vecNormals.push_back(n2);
+
+			// Indices dans ordre trigo
+			if(dot(cross(p1-p0, p2-p0), n0+n1+n2)>0) {
+				vecIndices.push_back(N);
+				vecIndices.push_back(N+1);
+				vecIndices.push_back(N+2);
+			}
+			else {
+				vecIndices.push_back(N);
+				vecIndices.push_back(N+2);
+				vecIndices.push_back(N+1);
+			}
+
+			return;
+		}
+	}
+
+	// 3. 2 positifs et 2 négatifs
+	// Sélection des différentes combinaisons de points : on cherche pi et pj tq leur image soit de même signe
+	for(unsigned int i=0; i<3; i++) {
+		for(unsigned int j=i+1; j<4; j++) {
+			unsigned int k = (i+1)%4;
+			if(k == j) {
+				k += 1;
+				k %= 4;
+			}
+
+			unsigned int l = (k+1)%4;
+			if(l == i) {
+				l += 1;
+				l %= 4;
+			}
+			if(l == j) {
+				l += 1;
+				l %= 4;
+			}
+
+			if(i == k || j == k || i == l || j == l || k == l)
+				cerr << "indices are wrong ! " << endl;
+
+			// Si les points pi et pj ont leur image de même signe
+			// On forme un quadrilatère
+			if(b[i] && b[j] && !b[k] && !b[l] || !b[i] && !b[j] && b[k] && b[l]) {
+				//
+				vec3 p0 = findRoot(function, 0.0, p[i], p[k]);
+				vec3 p1 = findRoot(function, 0.0, p[i], p[l]);
+				vec3 p2 = findRoot(function, 0.0, p[j], p[k]);
+				vec3 p3 = findRoot(function, 0.0, p[j], p[l]);
+				vecPositions.push_back(p0);
+				vecPositions.push_back(p1);
+				vecPositions.push_back(p2);
+				vecPositions.push_back(p3);
+
+				vec3 n0 = glm::normalize(-function.EvalDev(p0));
+				vec3 n1 = glm::normalize(-function.EvalDev(p1));
+				vec3 n2 = glm::normalize(-function.EvalDev(p2));
+				vec3 n3 = glm::normalize(-function.EvalDev(p3));
+				vecNormals.push_back(n0);
+				vecNormals.push_back(n1);
+				vecNormals.push_back(n2);
+				vecNormals.push_back(n3);
+
+				if(dot(cross(p2-p0, p3-p0), n0+n3+n2)>0) {
+					vecIndices.push_back(N);
+					vecIndices.push_back(N+2);
+					vecIndices.push_back(N+3);
+
+					vecIndices.push_back(N);
+					vecIndices.push_back(N+3);
+					vecIndices.push_back(N+1);
+				} else {
+					vecIndices.push_back(N);
+					vecIndices.push_back(N+3);
+					vecIndices.push_back(N+2);
+
+					vecIndices.push_back(N);
+					vecIndices.push_back(N+1);
+					vecIndices.push_back(N+3);
+				}
+
+				return;
+			}
+		}
+	}
+	cerr << "no solution found in marching tetrahedron !!" << endl;
+
+}
+
+/**
+ * Construit un mesh défini par son iso fonction, les coord limites du marching cubes et sa résolution
+ */
+Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double minY, double maxY,
+		double minZ, double maxZ, const unsigned int resX, const unsigned int resY,
+		const unsigned int resZ) {
+	m_positions = vector<vec3>();
+	m_normals  = vector<vec3>();
+	m_indices    = vector<unsigned int>();
+
+	// Boucles correspondant au marching cubes (découpage en cubes)
+	for(unsigned int i=0; i < resX; i++) {
+		float x0 = float(i  )/resX * (maxX - minX) + minX;
+		float x1 = float(i+1)/resX * (maxX - minX) + minX;
+		for(unsigned int j=0; j < resY; j++) {
+			float y0 = float(j  )/resY * (maxY - minY) + minY;
+			float y1 = float(j+1)/resY * (maxY - minY) + minY;
+			for(unsigned int k=0; k < resZ; k++) {
+				float z0 = float(k  )/resZ * (maxZ - minZ) + minZ;
+				float z1 = float(k+1)/resZ * (maxZ - minZ) + minZ;
+
+				// Les 8 points du cube défini par (i,j,k)
+				vec3 p000 = vec3(x0, y0, z0);
+				vec3 p001 = vec3(x1, y0, z0);
+				vec3 p010 = vec3(x0, y1, z0);
+				vec3 p011 = vec3(x1, y1, z0);
+				vec3 p100 = vec3(x0, y0, z1);
+				vec3 p101 = vec3(x1, y0, z1);
+				vec3 p110 = vec3(x0, y1, z1);
+				vec3 p111 = vec3(x1, y1, z1);
+
+				// Découpage du cube en 6 tétrahèdres (définis chacun par 4 points)
+				vec3 p0[4] =  {p000, p001, p011, p111};
+				vec3 p1[4] =  {p000, p011, p010, p111};
+				vec3 p2[4] =  {p000, p010, p110, p111};
+				vec3 p3[4] =  {p000, p110, p100, p111};
+				vec3 p4[4] =  {p000, p100, p101, p111};
+				vec3 p5[4] =  {p000, p101, p001, p111};
+
+				// Marching tetrahedra
+				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p0);
+				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p1);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p2);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p3);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p4);
+	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p5);
+			}
+		}
+	}
+}
+
+struct edge {
+    uint indice_vertice1;
+    uint indice_vertice2;
+    std::vector<glm::vec3> adjacent_vertices;
+};
+
+/**
+ * Edge collapsing
+ */
+Mesh Mesh::postProcess() {
+    std::vector<glm::vec3> v_positions = this->m_positions;
+    std::vector<glm::vec3> v_normals = this->m_normals;
+    std::vector<glm::uint> v_indices = this->m_indices;
+
+    Mesh m = Mesh();
+    std::vector<edge> edges;
+
+    for (int i = 0; i < v_positions.size()/3; i++) {
+    	edge e;
+
+    }
+
+	return m;
+}
+
+
+Mesh::Mesh(const char* filename)
 {
 	int j = 0;
     unsigned int tmp;
@@ -18,7 +251,7 @@ Mesh::Mesh(const char* filename)
 	int   error;
 	float r;
 
-	if((file=fopen(filename,"r"))==NULL) 
+	if((file=fopen(filename,"r"))==NULL)
 	{
 		std::cout << "Unable to read : " << filename << std::endl;
 	}
@@ -31,7 +264,7 @@ Mesh::Mesh(const char* filename)
     glm::uint nb_vertices, nb_faces;
 
 	error = fscanf(file,"OFF\n%d %d %d\n",&(nb_vertices),&(nb_faces),&tmp);
-	if(error==EOF) 
+	if(error==EOF)
 	{
 		std::cout << "Unable to read : " << filename << std::endl;
 	}
@@ -41,10 +274,10 @@ Mesh::Mesh(const char* filename)
     m_indices.resize(nb_faces*3);
 
 	// reading vertices
-	for(int i=0;i<nb_vertices;++i) 
+	for(int i=0;i<nb_vertices;++i)
 	{
         error = fscanf(file,"%f %f %f\n",&(m_positions[i][0]),&(m_positions[i][1]),&(m_positions[i][2]));
-		if(error==EOF) 
+		if(error==EOF)
 		{
 			std::cout << "Unable to read vertices of : " << filename << std::endl;
 			exit(EXIT_FAILURE);
@@ -53,17 +286,17 @@ Mesh::Mesh(const char* filename)
 
 	// reading faces
 	j = 0;
-	for(int i=0;i<nb_faces;++i) 
+	for(int i=0;i<nb_faces;++i)
 	{
         error = fscanf(file,"%d %d %d %d\n",&tmp,&(m_indices[j]),&(m_indices[j+1]),&(m_indices[j+2]));
 
-		if(error==EOF) 
+		if(error==EOF)
 		{
 			std::cout << "Unable to read faces of : " << filename << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
-		if(tmp!=3) 
+		if(tmp!=3)
 		{
 			printf("Error : face %d is not a triangle (%d polygonal face!)\n",i/3,tmp);
 			exit(EXIT_FAILURE);
@@ -418,33 +651,6 @@ void Mesh::CreateIsoSurface(  Mesh& mesh
         }
     }
 
-}
-
-vec3 findRoot(const ImplicitFunction& function, const float isoValue, const vec3& p0, const vec3& p1, unsigned nb_iter = 10)
-{
-    vec3 p00 = p0;
-    vec3 p10 = p1;
-    if(function.Eval(p0) > function.Eval(p1))
-    {
-        swap(p00, p10);
-    }
-
-    vec3 p = 0.5f*(p00+p10);
-    for(unsigned int iter = 0; iter < nb_iter; iter++)
-    {
-        if(function.Eval(p) > isoValue)
-        {
-            p10 = 0.5f * (p00 + p10);
-        }
-        else
-        {
-            p00 = 0.5f * (p00 + p10);
-        }
-
-        p = 0.5f*(p00+p10);
-    }
-
-    return p;
 }
 
 void Mesh::ProcessTetrahedron(Mesh& mesh, const ImplicitFunction& function, const float isoValue, const vec3 p[])
