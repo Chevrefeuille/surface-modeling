@@ -217,8 +217,9 @@ Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double mi
 }
 
 struct edge {
-	std::vector<glm::vec3> vertices [2];
-	std::vector<glm::vec3> adj_vertices [2];
+    uint indice_vertice1;
+    uint indice_vertice2;
+    std::vector<glm::vec3> adjacent_vertices;
 };
 
 /**
@@ -237,7 +238,7 @@ Mesh Mesh::postProcess() {
 
     }
 
-	return this;
+	return m;
 }
 
 
