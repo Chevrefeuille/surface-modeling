@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Plane.h"
+#include "Graph.h"
 
 using namespace glm;
 
@@ -16,6 +17,7 @@ public:
     DataSet(){}                        /// Empty constructor
     DataSet(const char* filename);     /// Imports a dataset from a data file
     Plane ComputeTangentPlanes();
+    Graph ComputeEMST();
 
     // Accessors
     int nbPoints() const {return m_N;}
