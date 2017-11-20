@@ -36,6 +36,8 @@ public:
     vertices_map* work;
     void addVertex(const glm::vec3& coordinates);
     void addEdge(const glm::vec3& from, const glm::vec3& to, double cost);
+    void printGraph();
+
 };
 
 #endif // GRAPH_H
