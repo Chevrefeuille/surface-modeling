@@ -5,7 +5,7 @@ project(Base_Projet)
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-#set(CMAKE_CXX_COMPILER "g++-7")
+set(CMAKE_CXX_COMPILER "g++-7")
 
 #set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_BUILD_TYPE Debug)
@@ -21,7 +21,6 @@ include_directories(
         external/glm-0.9.4.0/
         external/glew-1.9.0/include/
         external/eigen-3.3.4/
-        external/VTK-8.0.1/
 )
 
 

@@ -30,8 +30,8 @@ int main()
 	minX-=2*(maxX-minX)/resX; minY-=2*(maxY-minY)/resY; minZ-=2*(maxZ-minZ)/resZ;
 	maxX+=2*(maxX-minX)/resX; maxY+=2*(maxY-minY)/resY; maxZ+=2*(maxZ-minZ)/resZ;
 
-    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-    Mesh m2 = m.postProcess();
+    //Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    //Mesh m2 = m.postProcess();
 
     return EXIT_SUCCESS;
 }

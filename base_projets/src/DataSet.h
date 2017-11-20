@@ -14,7 +14,7 @@ class DataSet
 public:
     // Constructors
     DataSet(){}                        /// Empty constructor
-    DataSet(const char* filename);     /// Imports a mesh from a data file
+    DataSet(const char* filename);     /// Imports a dataset from a data file
     Plane ComputeTangentPlanes();
 
     // Accessors

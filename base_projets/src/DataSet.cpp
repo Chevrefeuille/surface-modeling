@@ -152,6 +152,3 @@ Plane DataSet::ComputeTangentPlanes() {
 	}
 }
 
-vector<glm::vec3> DataSet::ComputeTriangulation() {
-
-}
