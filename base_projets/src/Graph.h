@@ -8,7 +8,11 @@
 #include <glm/glm.hpp>
 #include <tr1/functional>
 #include <tr1/unordered_map>
+#include <queue>
 
+#define INF std::numeric_limits<double>::infinity()
+struct vertex;
+typedef std::pair<double, vertex*> ve;
 
 struct KeyFuncs {
     size_t operator()(const glm::vec3& k)const {
@@ -21,10 +25,19 @@ struct KeyFuncs {
 };
 
 struct vertex {
-    typedef std::pair<double, vertex*> ve;
     std::vector<ve> adj; //cost of edge, destination vertex
     glm::vec3 coordinates;
-    vertex(glm::vec3 c) : coordinates(c) {}
+    double cost; //useful for Prim's algorithm
+    vertex* next; //useful for Prim's algorithm
+    vertex(glm::vec3 c, double _cost, vertex* _next) : coordinates(c), cost(_cost), next(_next) {}
+};
+
+struct LessThanByCost
+{
+  bool operator()(const vertex* lhs_vertex, const vertex* rhs_vertex) const
+  {
+    return lhs_vertex->cost < rhs_vertex->cost;
+  }
 };
 
 typedef std::tr1::unordered_map<glm::vec3, vertex*, KeyFuncs> vertices_map;
@@ -36,6 +49,8 @@ public:
     vertices_map* work;
     void addVertex(const glm::vec3& coordinates);
     void addEdge(const glm::vec3& from, const glm::vec3& to, double cost);
+    void printGraph();
+    void prim(vertex& start);
 };
 
 #endif // GRAPH_H
