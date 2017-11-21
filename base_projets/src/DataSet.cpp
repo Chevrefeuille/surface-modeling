@@ -168,6 +168,5 @@ Graph DataSet::ComputeEMST() {
 			//std::cout << distance << std::endl;
 		}
 	}
-	EMST->printGraph();
 	//EMST->ComputeMST();
 }
