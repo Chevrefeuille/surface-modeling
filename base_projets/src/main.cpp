@@ -20,6 +20,7 @@ int main()
     ds.ComputeTangentPlanes();
 
     ds.ComputeEMST();
+    ds.addKNeighborsEdges();
 
     //ImplicitFunction f();
 

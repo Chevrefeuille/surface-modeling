@@ -5,21 +5,21 @@ Graph::Graph()
   work = new vertices_map();
 }
 
-void Graph::addVertex(const glm::vec3& coordinates)
+void Graph::addVertex(const Plane& p)
 {
-    vertices_map::iterator search = (*work).find(coordinates);
+    vertices_map::iterator search = (*work).find(p);
     if (search == (*work).end())
     {
         //std::cout << "New Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ")" << std::endl;
         vertex *v;
-        v = new vertex(coordinates);
-        (*work)[coordinates] = v;
+        v = new vertex(p);
+        (*work)[p] = v;
         return;
     }
     //std::cout << "Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ") already exists!" << std::endl;
 }
 
-void Graph::addEdge(const glm::vec3& from, const glm::vec3& to, double cost)
+void Graph::addEdge(const Plane& from, const Plane& to, double cost)
 {
     vertex *f = (*work).find(from)->second;
     vertex *t = (*work).find(to)->second;
@@ -31,14 +31,14 @@ void Graph::printGraph() {
     vertices_map::iterator itr;
     for (itr = (*work).begin(); itr != (*work).end(); itr++) {
         vertex *v = itr->second;
-        glm::vec3 c1 = v->coordinates;
+        glm::vec3 c1 = v->plane.getCenter();
         int n_neighbors = (v->adj).size();
         for (int i = 0; i < n_neighbors; i++) {
             std::pair<double, vertex*> ve = v->adj[i];
             double d = ve.first;
-            glm::vec3 c2 = ve.second->coordinates;
+            glm::vec3 c2 = ve.second->plane.getCenter();
             std::cout << "(" << c1.x << ", " << c1.y << ", " << c1.z << ") ---"
-            << d << "--->" << "(" << c2.x << ", " << c2.y << ", " << c2.z << ")" << std::endl;
+            << d << "---> (" << c2.x << ", " << c2.y << ", " << c2.z << ")" << std::endl;
         }
     }
 }
