@@ -113,7 +113,7 @@ glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 		o += x2;
 	}
 	o /= m_K;
-	// std::cout << o[0] << std::endl;
+	std::cout << o[0] << ", " << o[1] << ", " << o[2]  << std::endl;
 	return o;
 }
 
@@ -226,5 +226,5 @@ void DataSet::addKNeighborsEdges() {
 			m_graph.addEdge(pi, pj, 0);
 		}
 	}
-	m_graph.printGraph();
+	//m_graph.printGraph();
 }
