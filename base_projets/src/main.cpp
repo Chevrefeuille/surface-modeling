@@ -4,10 +4,10 @@
 #include <string>
 #include <glm/glm.hpp>
 
-
 #include "DataSet.h"
 #include "Mesh.h"
 #include "ImplicitFunction.h"
+
 
 using namespace glm;
 using namespace std;
@@ -20,6 +20,7 @@ int main()
     ds.ComputeTangentPlanes();
 
     ds.ComputeEMST();
+    ds.addKNeighborsEdges();
 
     //ImplicitFunction f();
 

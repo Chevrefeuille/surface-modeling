@@ -4,19 +4,21 @@ Graph::Graph() {
   work = new vertices_map();
 }
 
-void Graph::addVertex(const glm::vec3& coordinates) {
-    vertices_map::iterator search = (*work).find(coordinates);
-    if (search == (*work).end()) {
+void Graph::addVertex(const Plane& p)
+{
+    vertices_map::iterator search = (*work).find(p);
+    if (search == (*work).end())
+    {
         //std::cout << "New Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ")" << std::endl;
         vertex *v;
-        v = new vertex(coordinates, INF, NULL, false);
-        (*work)[coordinates] = v;
+        v = new vertex(p, INF, NULL, false, false);
+        (*work)[p] = v;
         return;
     }
-    //std::cout << "Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ") already exists!" << std::endl;
 }
 
-void Graph::addEdge(const glm::vec3& from, const glm::vec3& to, double cost) {
+void Graph::addEdge(const Plane& from, const Plane& to, double cost)
+{
     vertex *f = (*work).find(from)->second;
     vertex *t = (*work).find(to)->second;
     std::pair<double, vertex *> edge = std::make_pair(cost, t);
@@ -50,10 +52,26 @@ void Graph::computeMSTwithPrim() {
     for (vertices_map::iterator itr = (*work).begin(); itr != (*work).end(); itr++) {
         if (itr->second->prev != NULL) {
             double d = itr->second->cost;
-            glm::vec3 c1 = itr->second->coordinates;
-            glm::vec3 c2 = itr->second->prev->coordinates;
+            glm::vec3 c1 = itr->second->plane.getCenter();
+            glm::vec3 c2 = itr->second->prev->plane.getCenter();
             std::cout << "(" << c1.x << ", " << c1.y << ", " << c1.z << ") ---"
             << d << "---> " << "(" << c2.x << ", " << c2.y << ", " << c2.z << ")" << std::endl;
+        }
+    }
+}
+
+void Graph::DFS(vertex* curr, vertex* prev) {
+    glm::vec3 currNormal = curr->plane.getNormal();
+    if (prev != NULL &&  glm::dot(prev->plane.getNormal(), currNormal) < 0) {
+        curr->plane.setNormal(prev->plane.getNormal());
+    }
+    curr->isMarked = true;
+    glm::vec3 c1 = curr->plane.getCenter();
+    std::cout << "(" << c1.x << ", " << c1.y << ", " << c1.z << ")" << std::endl;
+    for (std::vector<ve>::iterator it = curr->adj.begin() ; it != curr->adj.end(); ++it) {
+        vertex* u = it->second;
+        if (!u->isMarked) {
+            DFS(u, curr);
         }
     }
 }
@@ -62,14 +80,14 @@ void Graph::printGraph() {
     vertices_map::iterator itr;
     for (itr = (*work).begin(); itr != (*work).end(); itr++) {
         vertex *v = itr->second;
-        glm::vec3 c1 = v->coordinates;
+        glm::vec3 c1 = v->plane.getCenter();
         int n_neighbors = (v->adj).size();
         for (int i = 0; i < n_neighbors; i++) {
             std::pair<double, vertex*> ve = v->adj[i];
             double d = ve.first;
-            glm::vec3 c2 = ve.second->coordinates;
+            glm::vec3 c2 = ve.second->plane.getCenter();
             std::cout << "(" << c1.x << ", " << c1.y << ", " << c1.z << ") ---"
-            << d << "---> " << "(" << c2.x << ", " << c2.y << ", " << c2.z << ")" << std::endl;
+            << d << "---> (" << c2.x << ", " << c2.y << ", " << c2.z << ")" << std::endl;
         }
     }
 }
