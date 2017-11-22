@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include <algorithm>
 
 Graph::Graph()
 {
@@ -24,7 +25,12 @@ void Graph::addEdge(const Plane& from, const Plane& to, double cost)
     vertex *f = (*work).find(from)->second;
     vertex *t = (*work).find(to)->second;
     std::pair<double, vertex *> edge = std::make_pair(cost, t);
-    f->adj.push_back(edge);
+    if (std::find(f->adj.begin(), f->adj.end(), edge) == f->adj.end()) {
+        f->adj.push_back(edge);
+        //std::cout << "Adding edge" << std::endl;
+    } else {
+        //std::cout << "Edge already exists" << std::endl;
+    }
 }
 
 void Graph::printGraph() {
