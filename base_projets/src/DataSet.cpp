@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
-#include <DataSet.h>
+#include "DataSet.h"
 
 struct POINT_AND_DISTANCE {
     glm::vec3 point;
@@ -150,4 +150,42 @@ Plane DataSet::ComputeTangentPlanes() {
 		Plane tangentPlane(o, n);
 		m_tangentPlanes[i] = tangentPlane;
 	}
+}
+
+
+void DataSet::ComputeEMST() {
+	Graph* EMST = new Graph();
+	for (int i = 0; i < m_N; i++) {
+		glm::vec3 vi = m_points[i];
+		(*EMST).addVertex(vi);
+		for (int j = 0; j < m_N; j++) {
+			glm::vec3 vj = m_points[j];
+			(*EMST).addVertex(vj);
+			double distance = sqrt((vj[0] - vi[0]) * (vj[0] - vi[0]) +
+			(vj[1] - vi[1]) * (vj[1] - vi[1]) +
+			(vj[2] - vi[2]) * (vj[2] - vi[2]));
+			(*EMST).addEdge(vi, vj, distance);
+			//std::cout << distance << std::endl;
+		}
+	}
+	//EMST->ComputeMST();
+}
+
+
+void DataSet::addKNeighborsEdges() {
+	Graph* EMST = new Graph();
+	for (int i = 0; i < m_N; i++) {
+		glm::vec3 vi = m_points[i];
+		(*EMST).addVertex(vi);
+		for (int j = 0; j < m_N; j++) {
+			glm::vec3 vj = m_points[j];
+			(*EMST).addVertex(vj);
+			double distance = sqrt((vj[0] - vi[0]) * (vj[0] - vi[0]) +
+			(vj[1] - vi[1]) * (vj[1] - vi[1]) +
+			(vj[2] - vi[2]) * (vj[2] - vi[2]));
+			(*EMST).addEdge(vi, vj, distance);
+			//std::cout << distance << std::endl;
+		}
+	}
+	//EMST->ComputeMST();
 }

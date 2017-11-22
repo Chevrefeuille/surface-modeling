@@ -7,6 +7,7 @@
 #include <tr1/unordered_map>
 
 #include "Plane.h"
+#include "Graph.h"
 
 struct KeyFuncs;
 struct Node;
@@ -20,27 +21,15 @@ struct Node
 };
 
 
-// struct KeyFuncs
-// {
-//     size_t operator()(const Node& k)const
-//     {
-//         return std::tr1::hash<double>()(k.coordinates.x) ^ std::tr1::hash<double>()(k.coordinates.y) ^ std::tr1::hash<double>()(k.coordinates.z);
-//     }
-//
-//     bool operator()(const Node& a, const Node& b)const
-//     {
-//             return a.coordinates.x == b.coordinates.x && a.coordinates.y == b.coordinates.y && a.coordinates.z == b.coordinates.z;
-//     }
-// };
-
-
 class DataSet {
 
 public:
     // Constructors
     DataSet(){}                        /// Empty constructor
-    DataSet(const char* filename);     /// Imports a mesh from a data file
+    DataSet(const char* filename);     /// Imports a dataset from a data file
     Plane ComputeTangentPlanes();
+    void ComputeEMST();
+    void addKNeighborsEdges();
 
     // Accessors
     int nbPoints() const {return m_N;}
@@ -57,13 +46,15 @@ protected:
     int m_K;
     std::vector<glm::vec3> m_points;             /// Container for the vertices positions
     std::vector<Plane> m_tangentPlanes;
+
+    Graph* graph;
     // min/max coordinate values in each direction
     double min_X, min_Y, min_Z, max_X, max_Y, max_Z;
+
 
     std::vector<glm::vec3> ComputeNhbd(glm::vec3 x);
     glm::vec3 ComputeCentroid(std::vector<glm::vec3>);
     glm::vec3 ComputeTangent(std::vector<glm::vec3>, glm::vec3 o);
-
 };
 
 

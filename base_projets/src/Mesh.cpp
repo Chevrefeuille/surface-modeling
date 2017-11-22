@@ -216,8 +216,29 @@ Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double mi
 	}
 }
 
-void Mesh::postProcess() {
-	//TODO
+struct edge {
+    uint indice_vertice1;
+    uint indice_vertice2;
+    std::vector<glm::vec3> adjacent_vertices;
+};
+
+/**
+ * Edge collapsing
+ */
+Mesh Mesh::postProcess() {
+    std::vector<glm::vec3> v_positions = this->m_positions;
+    std::vector<glm::vec3> v_normals = this->m_normals;
+    std::vector<glm::uint> v_indices = this->m_indices;
+
+    Mesh m = Mesh();
+    std::vector<edge> edges;
+
+    for (int i = 0; i < v_positions.size()/3; i++) {
+    	edge e;
+
+    }
+
+	return m;
 }
 
 

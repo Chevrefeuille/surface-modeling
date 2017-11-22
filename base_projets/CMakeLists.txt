@@ -5,6 +5,10 @@ project(Base_Projet)
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+<<<<<<< HEAD
+=======
+set(CMAKE_CXX_COMPILER "g++-7")
+>>>>>>> 85e04e9cc832fdce1221893d06a0c6a60c3d027e
 
 #set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_BUILD_TYPE Debug)
