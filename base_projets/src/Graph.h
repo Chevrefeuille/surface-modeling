@@ -27,16 +27,16 @@ struct KeyFuncs {
 struct vertex {
     std::vector<ve> adj; //cost of edge, destination vertex
     glm::vec3 coordinates;
-    double cost; //useful for Prim's algorithm
-    vertex* next; //useful for Prim's algorithm
-    vertex(glm::vec3 c, double _cost, vertex* _next) : coordinates(c), cost(_cost), next(_next) {}
+    double cost; //used by Prim's algorithm
+    vertex* prev; //used by Prim's algorithm
+    bool isInMST; //used by Prim's algorithm
+    vertex(glm::vec3 c, double _cost, vertex* _prev, bool b) : coordinates(c), cost(_cost), prev(_prev), isInMST(b) {}
 };
 
-struct LessThanByCost
-{
+struct GreaterThanByCost {
   bool operator()(const vertex* lhs_vertex, const vertex* rhs_vertex) const
   {
-    return lhs_vertex->cost < rhs_vertex->cost;
+    return lhs_vertex->cost > rhs_vertex->cost;
   }
 };
 
@@ -50,7 +50,7 @@ public:
     void addVertex(const glm::vec3& coordinates);
     void addEdge(const glm::vec3& from, const glm::vec3& to, double cost);
     void printGraph();
-    void prim(vertex& start);
+    void computeMSTwithPrim();
 };
 
 #endif // GRAPH_H
