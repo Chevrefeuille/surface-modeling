@@ -12,8 +12,8 @@
 #include "Plane.h"
 
 #define INF std::numeric_limits<double>::infinity()
-struct vertex;
-typedef std::pair<double, vertex*> ve;
+struct Vertex;
+typedef std::pair<double, Vertex*> ve;
 
 struct KeyFuncs {
     size_t operator()(const Plane& p)const {
@@ -28,24 +28,24 @@ struct KeyFuncs {
     }
 };
 
-struct vertex {
-    std::vector<ve> adj; //cost of edge, destination vertex
+struct Vertex {
+    std::vector<ve> adj; //cost of edge, destination Vertex
     Plane plane;
     double cost; //used by Prim's algorithm
-    vertex* prev; //used by Prim's algorithm
+    Vertex* prev; //used by Prim's algorithm
     bool isInMST; //used by Prim's algorithm
     bool isMarked; //used by DFS algorithm
-    vertex(Plane p, double _cost, vertex* _prev, bool _isInMST, bool _isMarked) : plane(p), cost(_cost), prev(_prev), isInMST(_isInMST), isMarked(_isMarked) {}
+    Vertex(Plane p, double _cost, Vertex* _prev, bool _isInMST, bool _isMarked) : plane(p), cost(_cost), prev(_prev), isInMST(_isInMST), isMarked(_isMarked) {}
 };
 
 struct GreaterThanByCost {
-  bool operator()(const vertex* lhs_vertex, const vertex* rhs_vertex) const
+  bool operator()(const Vertex* lhs_Vertex, const Vertex* rhs_Vertex) const
   {
-    return lhs_vertex->cost > rhs_vertex->cost;
+    return lhs_Vertex->cost > rhs_Vertex->cost;
   }
 };
 
-typedef std::tr1::unordered_map<Plane, vertex*, KeyFuncs, KeyFuncs> vertices_map;
+typedef std::tr1::unordered_map<Plane, Vertex*, KeyFuncs, KeyFuncs> vertices_map;
 
 class Graph
 {
@@ -56,7 +56,7 @@ public:
     void addEdge(const Plane& from, const Plane& to, double cost);
     void printGraph();
     void computeMSTwithPrim();
-    void DFS(vertex* curr, vertex* prev);
+    void DFS(Vertex* curr, Vertex* prev);
 };
 
 #endif // GRAPH_H

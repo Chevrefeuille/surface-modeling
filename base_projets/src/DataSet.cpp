@@ -179,8 +179,8 @@ void DataSet::ComputeEMST() {
 			//std::cout << distance << std::endl;
 		}
 	}
-	//m_graph.printGraph();
-    //m_graph.computeMSTwithPrim();
+	m_graph.printGraph();
+    m_graph.computeMSTwithPrim();
     m_graph.DFS(m_graph.work->begin()->second, NULL);
 }
 
