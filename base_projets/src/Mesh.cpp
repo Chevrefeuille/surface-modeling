@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include "omp.h"
+#include "MeshHE.h"
 
 #include <Mesh.h>
 #include <ImplicitFunction.h>
@@ -251,6 +252,11 @@ void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned
 }
 
 Mesh Mesh::postProcess(double epsilon) {
+    // Supprime les points en double et fait la correspondance avec les indices
+    this->RemoveDouble();
+    //MeshHE m_he(*this);
+    //return m_he;
+
     unsigned int n = m_positions.size()/3;
     double inscribedCercleRadius;
     double edgeAspectRatio [3*n];
@@ -271,6 +277,7 @@ Mesh Mesh::postProcess(double epsilon) {
     }
 
     // Indicage edgeAspectRatio par ordre croissant
+
 
     // Elimination des arretes aux plus petit ratio
     double ratio;
