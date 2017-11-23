@@ -32,10 +32,9 @@ struct Vertex {
     std::vector<ve> adj; //cost of edge, destination Vertex
     Plane plane;
     double cost; //used by Prim's algorithm
-    Vertex* prev; //used by Prim's algorithm
     bool isInMST; //used by Prim's algorithm
     bool isMarked; //used by DFS algorithm
-    Vertex(Plane p, double _cost, Vertex* _prev, bool _isInMST, bool _isMarked) : plane(p), cost(_cost), prev(_prev), isInMST(_isInMST), isMarked(_isMarked) {}
+    Vertex(Plane p, double _cost, bool _isInMST, bool _isMarked) : plane(p), cost(_cost), isInMST(_isInMST), isMarked(_isMarked) {}
 };
 
 struct GreaterThanByCost {

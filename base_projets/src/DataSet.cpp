@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
@@ -113,7 +114,7 @@ glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 		o += x2;
 	}
 	o /= m_K;
-	std::cout << o[0] << ", " << o[1] << ", " << o[2]  << std::endl;
+	//std::cout << o[0] << ", " << o[1] << ", " << o[2]  << std::endl;
 	return o;
 }
 
@@ -179,9 +180,8 @@ void DataSet::ComputeEMST() {
 			//std::cout << distance << std::endl;
 		}
 	}
-	m_graph.printGraph();
+    m_graph.printGraph();
     m_graph.computeMSTwithPrim();
-    m_graph.DFS(m_graph.work->begin()->second, NULL);
 }
 
 std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
@@ -211,7 +211,7 @@ std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
 	return KNeigbors;
 }
 
-void DataSet::addKNeighborsEdges() {
+void DataSet::AddKNeighborsEdges() {
 	std::vector<glm::vec3> m_centers(m_N);
 	std::vector<Plane> KNeighbors(m_K);
 	for (int i = 0; i < m_N; i++) {
@@ -226,5 +226,21 @@ void DataSet::addKNeighborsEdges() {
 			m_graph.addEdge(pi, pj, 0);
 		}
 	}
-	//m_graph.printGraph();
+	m_graph.printGraph();
+}
+
+void DataSet::AssignCostOnEdges() {
+    for (vertices_map::iterator it_vertices = m_graph.work->begin(); it_vertices != m_graph.work->end(); ++it_vertices) {
+        Vertex* u = it_vertices->second;
+        for (std::vector<ve>::iterator it_neighbors = u->adj.begin() ; it_neighbors != u->adj.end(); ++it_neighbors) {
+            Vertex* v = it_neighbors->second;
+            it_neighbors->first = 1 - abs(glm::dot(u->plane.getNormal(), v->plane.getNormal()));
+        }
+    }
+    m_graph.printGraph();
+}
+
+void DataSet::AssignTangentPlanesOrientation() {
+    m_graph.computeMSTwithPrim();
+    m_graph.DFS(m_graph.work->begin()->second, NULL);
 }
