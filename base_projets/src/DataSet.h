@@ -17,7 +17,9 @@ public:
     DataSet(const char* filename);     /// Imports a dataset from a data file
     Plane ComputeTangentPlanes();
     void ComputeEMST();
-    void addKNeighborsEdges();
+    void AddKNeighborsEdges();
+    void AssignCostOnEdges();
+    void AssignTangentPlanesOrientation();
 
 protected:
     // Attributes
