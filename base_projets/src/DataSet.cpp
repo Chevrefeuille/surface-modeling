@@ -29,7 +29,7 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 }
 
 DataSet::DataSet(const char* filename) :
-	m_K(3)
+	m_K(2)
 {
 	FILE *file;
 	int error;
@@ -108,12 +108,12 @@ std::vector<glm::vec3> DataSet::ComputeNhbd(glm::vec3 x) {
 
 glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 	glm::vec3 o;
-	for (int i = 0; i < m_K; i++) {
+	for (int i = 0; i < m_K + 1; i++) {
 		glm::vec3 x2 = points[i];
 		// std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << std::endl;
 		o += x2;
 	}
-	o /= m_K;
+	o /= (m_K + 1);
 	//std::cout << o[0] << ", " << o[1] << ", " << o[2]  << std::endl;
 	return o;
 }
@@ -149,10 +149,11 @@ glm::vec3 DataSet::ComputeTangent(std::vector<glm::vec3> points, glm::vec3 o) {
 
 Plane DataSet::ComputeTangentPlanes() {
 	m_tangentPlanes.resize(m_N);
-	std::vector<glm::vec3> Nhbd(m_K);
+	std::vector<glm::vec3> Nhbd(m_K + 1);
 	for (int i = 0; i < m_N; i++) {
 		// std::cout << m_points[i][0] << ", " << m_points[i][1] << ", " << m_points[i][2] << " => " << std::endl;
 		Nhbd = ComputeNhbd(m_points[i]);
+        Nhbd.push_back(m_points[i]);
 		glm::vec3 o = ComputeCentroid(Nhbd);
 		glm::vec3 n = ComputeTangent(Nhbd, o);
 		// std::cout << "Centroid : " << o[0] << ", " << o[1] << ", " << o[2] << std::endl;
@@ -185,57 +186,61 @@ void DataSet::ComputeEMST() {
 }
 
 std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
-	std::vector<PLANE_AND_DISTANCE> planes_and_distances(m_N);
-	
+	std::vector<PLANE_AND_DISTANCE> planes_and_distances(m_N - 1);
+
 	// computing distances
 	glm::vec3 x = p.getCenter();
-	std::cout << x[0] << ", " << x[1] << ", " << x[2] << std::endl;
+	//std::cout << x[0] << ", " << x[1] << ", " << x[2] << std::endl;
+    int k = 0;
 	for (int i = 0; i < m_N; i++) {
 		Plane p2 = m_tangentPlanes[i];
 		glm::vec3 x2 = p2.getCenter();
-		double distance = sqrt((x2[0] - x[0]) * (x2[0] - x[0]) +
-		(x2[1] - x[1]) * (x2[1] - x[1]) +
-		(x2[2] - x[2]) * (x2[2] - x[2]));
+        if (x2 != x) {
+            double distance = sqrt((x2[0] - x[0]) * (x2[0] - x[0]) +
+    		(x2[1] - x[1]) * (x2[1] - x[1]) +
+    		(x2[2] - x[2]) * (x2[2] - x[2]));
 
-		std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
-		planes_and_distances[i].plane = p2;
-		planes_and_distances[i].distance = distance;
-
+    		//std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
+    		planes_and_distances[k].plane = p2;
+            //std::cout << "->" << planes_and_distances[i].plane.getCenter()[0] << ", " << planes_and_distances[i].plane.getCenter()[1] << ", " << planes_and_distances[i].plane.getCenter()[2] << " ==> " << distance << std::endl;
+    		planes_and_distances[k].distance = distance;
+            k++;
+        }
 	}
-	std::sort(planes_and_distances.begin(), planes_and_distances.end());
+    std::sort(planes_and_distances.begin(), planes_and_distances.end());
 	// extracting k nearest neighbors
 	std::vector<Plane> KNeigbors(m_K);
-	for (int i = 0; i < m_K + 1; i++) { // skiping first element which is the point itself (at distance 0)
-		KNeigbors[i-1] = planes_and_distances[i].plane;
-		glm::vec3 x2 = KNeigbors[i-1].getCenter();
-		std::cout << "*" << x[0] << ", " << x[1] << ", " << x[2] << " ==> " << planes_and_distances[i].distance << std::endl;
+	for (int i = 0; i < m_K ; i++) {
+		KNeigbors[i] = planes_and_distances[i].plane;
+		glm::vec3 x2 = KNeigbors[i].getCenter();
+		//std::cout << "*" << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << planes_and_distances[i].distance << std::endl;
 	}
 	return KNeigbors;
 }
 
 void DataSet::AddKNeighborsEdges() {
-	std::vector<glm::vec3> m_centers(m_N);
 	std::vector<Plane> KNeighbors(m_K);
-	for (int i = 0; i < m_N; i++) {
-		m_centers.push_back(m_tangentPlanes[i].getCenter());
-	}
 	for (int i = 0; i < m_N; i++) {
 		Plane pi = m_tangentPlanes[i];
 		glm::vec3 vi = pi.getCenter();
+        //std::cout << "point " << vi.x << ", " << vi.y << ", " << vi.z << " neigbors :" << std::endl;
 		KNeighbors = ComputeKNeigbors(pi);
 		for (int j = 0; j < m_K; j++) {
 			Plane pj = KNeighbors[j];
+            glm::vec3 vj = pj.getCenter();
+            //std::cout << vj.x << ", " << vj.y << ", " << vj.z << std::endl;
 			m_graph.addEdge(pi, pj, 0);
 		}
 	}
 	m_graph.printGraph();
+    m_graph.writingPlanesIntoFile();
 }
 
 void DataSet::AssignCostOnEdges() {
     for (vertices_map::iterator it_vertices = m_graph.work->begin(); it_vertices != m_graph.work->end(); ++it_vertices) {
-        Vertex* u = it_vertices->second;
+        VertexG* u = it_vertices->second;
         for (std::vector<ve>::iterator it_neighbors = u->adj.begin() ; it_neighbors != u->adj.end(); ++it_neighbors) {
-            Vertex* v = it_neighbors->second;
+            VertexG* v = it_neighbors->second;
             it_neighbors->first = 1 - abs(glm::dot(u->plane.getNormal(), v->plane.getNormal()));
         }
     }
