@@ -66,7 +66,7 @@ void Graph::computeMSTwithPrim() {
         }
     }
     *this = *MST;
-    printGraph();
+    //printGraph();
 }
 
 void Graph::DFS(VertexG* curr, VertexG* prev) {

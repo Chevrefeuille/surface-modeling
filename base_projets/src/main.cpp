@@ -16,7 +16,7 @@ using namespace std;
 int main()
 {
     // Data Set creation
-    DataSet ds("../data/test.data");
+    DataSet ds("../data/sphere.data");
     ds.ComputeTangentPlanes();
 
     ds.ComputeEMST();

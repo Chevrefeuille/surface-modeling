@@ -177,7 +177,7 @@ void DataSet::ComputeEMST() {
 			//std::cout << distance << std::endl;
 		}
 	}
-    m_graph.printGraph();
+    //m_graph.printGraph();
     m_graph.computeMSTwithPrim();
 }
 
@@ -227,7 +227,7 @@ void DataSet::AddKNeighborsEdges() {
 			m_graph.addEdge(pi, pj, distance);
 		}
 	}
-	m_graph.printGraph();
+	//m_graph.printGraph();
     m_graph.writingPlanesIntoFile();
 }
 
