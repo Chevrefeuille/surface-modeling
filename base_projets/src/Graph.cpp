@@ -1,5 +1,7 @@
 #include "Graph.h"
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 
 Graph::Graph() {
   work = new vertices_map();
@@ -98,4 +100,17 @@ void Graph::printGraph() {
             << d << "---> (" << c2.x << ", " << c2.y << ", " << c2.z << ")" << std::endl;
         }
     }
+}
+
+void Graph::writingPlanesIntoFile() {
+    vertices_map::iterator itr;
+    std::ofstream myfile ("../example.txt", std::ios::out);
+    if (myfile.is_open()){
+        for (itr = work->begin(); itr !=  work->end(); itr++) {
+            glm::vec3 center = itr->second->plane.getCenter();
+            glm::vec3 normal = itr->second->plane.getNormal();
+            myfile << center.x << " " << center.y << " " << center.z << " " << normal.x << " " << normal.y << " " << normal.z << std::endl;
+         }
+    }
+    myfile.close();
 }

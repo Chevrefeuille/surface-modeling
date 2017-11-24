@@ -56,6 +56,7 @@ public:
     void printGraph();
     void computeMSTwithPrim();
     void DFS(Vertex* curr, Vertex* prev);
+    void writingPlanesIntoFile();
 };
 
 #endif // GRAPH_H
