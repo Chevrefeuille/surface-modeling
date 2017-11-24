@@ -186,9 +186,10 @@ void DataSet::ComputeEMST() {
 
 std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
 	std::vector<PLANE_AND_DISTANCE> planes_and_distances(m_N);
-	// std::cout << x[0] << ", " << x[1] << ", " << x[2] << std::endl;
+	
 	// computing distances
 	glm::vec3 x = p.getCenter();
+	std::cout << x[0] << ", " << x[1] << ", " << x[2] << std::endl;
 	for (int i = 0; i < m_N; i++) {
 		Plane p2 = m_tangentPlanes[i];
 		glm::vec3 x2 = p2.getCenter();
@@ -196,7 +197,7 @@ std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
 		(x2[1] - x[1]) * (x2[1] - x[1]) +
 		(x2[2] - x[2]) * (x2[2] - x[2]));
 
-		//std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
+		std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
 		planes_and_distances[i].plane = p2;
 		planes_and_distances[i].distance = distance;
 
@@ -204,9 +205,10 @@ std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
 	std::sort(planes_and_distances.begin(), planes_and_distances.end());
 	// extracting k nearest neighbors
 	std::vector<Plane> KNeigbors(m_K);
-	for (int i = 1; i < m_K + 1; i++) { // skiping first element which is the point itself (at distance 0)
+	for (int i = 0; i < m_K + 1; i++) { // skiping first element which is the point itself (at distance 0)
 		KNeigbors[i-1] = planes_and_distances[i].plane;
-		// std::cout << "-" << Nhbd[i-1][0] << ", " << Nhbd[i-1][1] << ", " << Nhbd[i-1][2] << " ==> " << points_and_distances[i].distance << std::endl;
+		glm::vec3 x2 = KNeigbors[i-1].getCenter();
+		std::cout << "*" << x[0] << ", " << x[1] << ", " << x[2] << " ==> " << planes_and_distances[i].distance << std::endl;
 	}
 	return KNeigbors;
 }
