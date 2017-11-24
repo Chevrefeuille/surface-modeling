@@ -280,36 +280,36 @@ Mesh Mesh::postProcess(double epsilon) {
 
 
     // Elimination des arretes aux plus petit ratio
-    double ratio;
-    unsigned int indexEdge, ip1, ip2;
-    unsigned int N;
-    for (int i = 0; i < 3*n; i++) {
-        indexEdge = orderedIndexEdgeAspectRatio[i];
-        ratio = edgeAspectRatio[indexEdge];
-        if (ratio >= epsilon) {break;}
-
-        // indices points à "unifier" :
-        if (indexEdge % 3 == 0) {
-            ip1 = m_indices[indexEdge];
-            ip2 = m_indices[indexEdge+1];
-        } else if (indexEdge % 3 == 1) {
-            ip1 = m_indices[indexEdge];
-            ip2 = m_indices[indexEdge+1];
-        } else {
-            ip1 = m_indices[indexEdge];
-            ip2 = m_indices[indexEdge-2];
-        }
-
-        // Nouveau point = milieu des 2 anciens points
-        p3 = (m_positions[ip1] + m_positions[ip2]) / 2;
-        N = m_positions.size(); // indice du nouveau point p3
-        m_indices.push_back(N);
-        m_positions.push_back(p3);
-        // On fait pointer les anciens sommets ip1 et ip2 vers N
-        this->collapseEdge(ip1, ip2, N);
-    }
-
-	return *this;
+    // double ratio;
+    // unsigned int indexEdge, ip1, ip2;
+    // unsigned int N;
+    // for (int i = 0; i < 3*n; i++) {
+    //     indexEdge = orderedIndexEdgeAspectRatio[i];
+    //     ratio = edgeAspectRatio[indexEdge];
+    //     if (ratio >= epsilon) {break;}
+    //
+    //     // indices points à "unifier" :
+    //     if (indexEdge % 3 == 0) {
+    //         ip1 = m_indices[indexEdge];
+    //         ip2 = m_indices[indexEdge+1];
+    //     } else if (indexEdge % 3 == 1) {
+    //         ip1 = m_indices[indexEdge];
+    //         ip2 = m_indices[indexEdge+1];
+    //     } else {
+    //         ip1 = m_indices[indexEdge];
+    //         ip2 = m_indices[indexEdge-2];
+    //     }
+    //
+    //     // Nouveau point = milieu des 2 anciens points
+    //     p3 = (m_positions[ip1] + m_positions[ip2]) / 2;
+    //     N = m_positions.size(); // indice du nouveau point p3
+    //     m_indices.push_back(N);
+    //     m_positions.push_back(p3);
+    //     // On fait pointer les anciens sommets ip1 et ip2 vers N
+    //     this->collapseEdge(ip1, ip2, N);
+    // }
+    //
+	// return *this;
 }
 
 
