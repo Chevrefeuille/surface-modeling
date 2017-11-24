@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include "omp.h"
+#include "MeshHE.h"
 
 #include <Mesh.h>
 #include <ImplicitFunction.h>
@@ -216,29 +217,99 @@ Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double mi
 	}
 }
 
-struct edge {
-    uint indice_vertice1;
-    uint indice_vertice2;
-    std::vector<glm::vec3> adjacent_vertices;
-};
+double inscribedCercleRadiusOfTriangle(vec3 p1, vec3 p2, vec3 p3) {
+    double areaTriangle = length(cross(p2-p1, p3-p1))/2;
+    double halfPerimeter = length(p2-p1) + length(p3-p2) + length(p3-p1);
+    halfPerimeter/=2;
+    return areaTriangle/halfPerimeter;
+}
 
 /**
  * Edge collapsing
+ * On fait pointer les anciens index sur le nouvel index
  */
-Mesh Mesh::postProcess() {
-    std::vector<glm::vec3> v_positions = this->m_positions;
-    std::vector<glm::vec3> v_normals = this->m_normals;
-    std::vector<glm::uint> v_indices = this->m_indices;
+void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex) {
+    unsigned int n = this->m_positions.size() / 3;
+    for (int i = 0; i < n; i++) {
+        // Si le triangle contient les 2 sommets à unifier:
+        if (this->m_indices[i] == oldIndex1 || this->m_indices[i+1] == oldIndex1 || this->m_indices[i+2] == oldIndex1) {
+            if (this->m_indices[i] == oldIndex2 || this->m_indices[i+1] == oldIndex2 || this->m_indices[i+2] == oldIndex2) {
 
-    Mesh m = Mesh();
-    std::vector<edge> edges;
+            }
+        }
 
-    for (int i = 0; i < v_positions.size()/3; i++) {
-    	edge e;
+        if (this->m_indices[i] == oldIndex1 || this->m_indices[i] == oldIndex2) {
+            this->m_indices[i] = newIndex;
+        }
+        if (this->m_indices[i+1] == oldIndex1 || this->m_indices[i+1] == oldIndex2) {
+            this->m_indices[i+1] = newIndex;
+        }
+        if (this->m_indices[i+2] == oldIndex1 || this->m_indices[i+2] == oldIndex2) {
+            this->m_indices[i+2] = newIndex;
+        }
 
     }
+}
 
-	return m;
+Mesh Mesh::postProcess(double epsilon) {
+    // Supprime les points en double et fait la correspondance avec les indices
+    this->RemoveDouble();
+    //MeshHE m_he(*this);
+    //return m_he;
+
+    unsigned int n = m_positions.size()/3;
+    double inscribedCercleRadius;
+    double edgeAspectRatio [3*n];
+    unsigned int orderedIndexEdgeAspectRatio[3*n];
+    vec3 p1, p2, p3;
+
+    for (int i = 0; i < 3*n; i++) {
+        // 0 : p2 - p1
+        // 1 : p3 - p2
+        // 2 : p3 - p1
+        p1 = m_positions[m_indices[3*i+0]];
+        p2 = m_positions[m_indices[3*i+1]];
+        p3 = m_positions[m_indices[3*i+2]];
+        inscribedCercleRadius = inscribedCercleRadiusOfTriangle(p1, p2, p3);;
+        edgeAspectRatio[3*i+0] = inscribedCercleRadius * length(p2-p1);
+        edgeAspectRatio[3*i+1] = inscribedCercleRadius * length(p3-p2);
+        edgeAspectRatio[3*i+2] = inscribedCercleRadius * length(p3-p1);
+    }
+
+    // Indicage edgeAspectRatio par ordre croissant
+
+
+    // Elimination des arretes aux plus petit ratio
+    double ratio;
+    unsigned int indexEdge, ip1, ip2;
+    unsigned int N;
+    for (int i = 0; i < 3*n; i++) {
+        indexEdge = orderedIndexEdgeAspectRatio[i];
+        ratio = edgeAspectRatio[indexEdge];
+        if (ratio >= epsilon) {break;}
+
+        // indices points à "unifier" :
+        if (indexEdge % 3 == 0) {
+            ip1 = m_indices[indexEdge];
+            ip2 = m_indices[indexEdge+1];
+        } else if (indexEdge % 3 == 1) {
+            ip1 = m_indices[indexEdge];
+            ip2 = m_indices[indexEdge+1];
+        } else {
+            ip1 = m_indices[indexEdge];
+            ip2 = m_indices[indexEdge-2];
+        }
+
+        // Nouveau point = milieu des 2 anciens points
+        p3 = (m_positions[ip1] + m_positions[ip2]) / 2;
+        N = m_positions.size(); // indice du nouveau point p3
+        m_indices.push_back(N);
+        m_positions.push_back(p3);
+        // On fait pointer les anciens sommets ip1 et ip2 vers N
+        this->collapseEdge(ip1, ip2, N);
+    }
+
+	return *this;
 }
 
 
