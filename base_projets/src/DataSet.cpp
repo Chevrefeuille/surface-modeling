@@ -29,7 +29,7 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 }
 
 DataSet::DataSet(const char* filename) :
-	m_K(2)
+	m_K(7)
 {
 	FILE *file;
 	int error;
@@ -122,7 +122,8 @@ glm::vec3 DataSet::ComputeTangent(std::vector<glm::vec3> points, glm::vec3 o) {
 	CV << 0.0,0.0,0.0,
 	0.0,0.0,0.0,
 	0.0,0.0,0.0;
-    for (int k = 0; k < m_N; k++) {
+	int N = points.size();
+    for (int k = 0; k < N ; k++) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				CV(i, j) += (points[k][i] - o[i]) * (points[k][j] - o[j]);
@@ -228,7 +229,6 @@ void DataSet::AddKNeighborsEdges() {
 		}
 	}
 	//m_graph.printGraph();
-    m_graph.writingPlanesIntoFile();
 }
 
 void DataSet::AssignCostOnEdges() {
@@ -239,10 +239,11 @@ void DataSet::AssignCostOnEdges() {
             it_neighbors->first = 1 - abs(glm::dot(u->plane.getNormal(), v->plane.getNormal()));
         }
     }
-    m_graph.printGraph();
+    //m_graph.printGraph();
 }
 
 void DataSet::AssignTangentPlanesOrientation() {
     m_graph.computeMSTwithPrim();
     m_graph.DFS(m_graph.work->begin()->second, NULL);
+	m_graph.writingPlanesIntoFile();
 }

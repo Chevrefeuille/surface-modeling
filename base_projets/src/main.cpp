@@ -21,8 +21,8 @@ int main()
 
     ds.ComputeEMST();
     ds.AddKNeighborsEdges();
-    //ds.AssignCostOnEdges();
-    //ds.AssignTangentPlanesOrientation();
+    ds.AssignCostOnEdges();
+    ds.AssignTangentPlanesOrientation();
 
     //ImplicitFunction f();
 

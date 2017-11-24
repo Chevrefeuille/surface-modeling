@@ -72,6 +72,7 @@ void Graph::computeMSTwithPrim() {
 void Graph::DFS(VertexG* curr, VertexG* prev) {
     glm::vec3 currNormal = curr->plane.getNormal();
     if (prev != NULL &&  glm::dot(prev->plane.getNormal(), currNormal) < 0) {
+        std::cout << "Inverting the normal" << std::endl;
         curr->plane.setNormal(prev->plane.getNormal());
     }
     curr->isMarked = true;
