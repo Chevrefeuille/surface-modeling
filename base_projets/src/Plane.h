@@ -12,6 +12,9 @@ public:
     // Constructors
     Plane(){}                                      /// Empty constructor
     Plane(glm::vec3 center, glm::vec3 normal);     /// Create plane from center and normal
+    glm::vec3 getNormal() const;
+    glm::vec3 setNormal(const glm::vec3& normal);
+    glm::vec3 getCenter() const;
 
 protected:
     // Attributes

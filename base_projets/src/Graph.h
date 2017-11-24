@@ -8,34 +8,54 @@
 #include <glm/glm.hpp>
 #include <tr1/functional>
 #include <tr1/unordered_map>
+#include <queue>
+#include "Plane.h"
 
+#define INF std::numeric_limits<double>::infinity()
+struct Vertex;
+typedef std::pair<double, Vertex*> ve;
 
 struct KeyFuncs {
-    size_t operator()(const glm::vec3& k)const {
+    size_t operator()(const Plane& p)const {
+        glm::vec3 k = p.getCenter();
         return std::tr1::hash<double>()(k.x) ^ std::tr1::hash<double>()(k.y) ^ std::tr1::hash<double>()(k.z);
     }
 
-    bool operator()(const glm::vec3& a, const glm::vec3& b)const {
+    bool operator()(const Plane& p1, const Plane& p2)const {
+        glm::vec3 a = p1.getCenter();
+        glm::vec3 b = p2.getCenter();
         return a.x == b.x && a.y == b.y && a.z == b.z;
     }
 };
 
-struct vertex {
-    typedef std::pair<double, vertex*> ve;
-    std::vector<ve> adj; //cost of edge, destination vertex
-    glm::vec3 coordinates;
-    vertex(glm::vec3 c) : coordinates(c) {}
+struct Vertex {
+    std::vector<ve> adj; //cost of edge, destination Vertex
+    Plane plane;
+    double cost; //used by Prim's algorithm
+    bool isInMST; //used by Prim's algorithm
+    bool isMarked; //used by DFS algorithm
+    Vertex(Plane p, double _cost, bool _isInMST, bool _isMarked) : plane(p), cost(_cost), isInMST(_isInMST), isMarked(_isMarked) {}
 };
 
-typedef std::tr1::unordered_map<glm::vec3, vertex*, KeyFuncs> vertices_map;
+struct GreaterThanByCost {
+  bool operator()(const Vertex* lhs_Vertex, const Vertex* rhs_Vertex) const
+  {
+    return lhs_Vertex->cost > rhs_Vertex->cost;
+  }
+};
+
+typedef std::tr1::unordered_map<Plane, Vertex*, KeyFuncs, KeyFuncs> vertices_map;
 
 class Graph
 {
 public:
     Graph();
     vertices_map* work;
-    void addVertex(const glm::vec3& coordinates);
-    void addEdge(const glm::vec3& from, const glm::vec3& to, double cost);
+    void addVertex(const Plane& plane);
+    void addEdge(const Plane& from, const Plane& to, double cost);
+    void printGraph();
+    void computeMSTwithPrim();
+    void DFS(Vertex* curr, Vertex* prev);
 };
 
 #endif // GRAPH_H

@@ -26,7 +26,7 @@ include_directories(
 
 set(ALL_LIBS
 	GLFW_276
-    GLEW_190
+        GLEW_190
 )
 
 add_definitions(
