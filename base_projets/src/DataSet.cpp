@@ -87,9 +87,7 @@ std::vector<glm::vec3> DataSet::ComputeNhbd(glm::vec3 x) {
 	// computing distances
 	for (int i = 0; i < m_N; i++) {
 		glm::vec3 x2 = m_points[i];
-		double distance = sqrt((x2[0] - x[0]) * (x2[0] - x[0]) +
-		(x2[1] - x[1]) * (x2[1] - x[1]) +
-		(x2[2] - x[2]) * (x2[2] - x[2]));
+		double distance = glm::distance(x2, x);
 
 		//std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
 		points_and_distances[i].point = x2;
@@ -174,9 +172,7 @@ void DataSet::ComputeEMST() {
 			Plane pj = m_tangentPlanes[j];
 			m_graph.addVertex(pj);
 			glm::vec3 vj = pj.getCenter();
-			double distance = sqrt((vj[0] - vi[0]) * (vj[0] - vi[0]) +
-			(vj[1] - vi[1]) * (vj[1] - vi[1]) +
-			(vj[2] - vi[2]) * (vj[2] - vi[2]));
+			double distance = glm::distance(vi, vj);
 			m_graph.addEdge(pi, pj, distance);
 			//std::cout << distance << std::endl;
 		}
@@ -196,9 +192,7 @@ std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
 		Plane p2 = m_tangentPlanes[i];
 		glm::vec3 x2 = p2.getCenter();
         if (x2 != x) {
-            double distance = sqrt((x2[0] - x[0]) * (x2[0] - x[0]) +
-    		(x2[1] - x[1]) * (x2[1] - x[1]) +
-    		(x2[2] - x[2]) * (x2[2] - x[2]));
+            double distance = glm::distance(x, x2);
 
     		//std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << distance << std::endl;
     		planes_and_distances[k].plane = p2;
@@ -229,7 +223,8 @@ void DataSet::AddKNeighborsEdges() {
 			Plane pj = KNeighbors[j];
             glm::vec3 vj = pj.getCenter();
             //std::cout << vj.x << ", " << vj.y << ", " << vj.z << std::endl;
-			m_graph.addEdge(pi, pj, 0);
+            double distance = glm::distance(vi, vj);
+			m_graph.addEdge(pi, pj, distance);
 		}
 	}
 	m_graph.printGraph();
