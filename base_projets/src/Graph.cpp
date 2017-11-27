@@ -5,6 +5,7 @@
 
 Graph::Graph() {
   work = new vertices_map();
+  maxZCenter = NULL;
 }
 
 void Graph::addVertex(const Plane& p)
@@ -16,7 +17,10 @@ void Graph::addVertex(const Plane& p)
         VertexG *v;
         v = new VertexG(p, INF, false, false);
         (*work)[p] = v;
-        return;
+
+        if (maxZCenter == NULL || v->plane.getCenter().z > maxZCenter->plane.getCenter().z) {
+            maxZCenter = v;
+        }
     }
 }
 
@@ -71,9 +75,10 @@ void Graph::computeMSTwithPrim() {
 
 void Graph::DFS(VertexG* curr, VertexG* prev) {
     glm::vec3 currNormal = curr->plane.getNormal();
-    if (prev != NULL &&  glm::dot(prev->plane.getNormal(), currNormal) < 0) {
-        std::cout << "Inverting the normal" << std::endl;
-        curr->plane.setNormal(prev->plane.getNormal());
+    if (prev == NULL) {
+        curr->plane.setNormal(abs(curr->plane.getNormal()));
+    } else if (glm::dot(prev->plane.getNormal(), currNormal) < 0) {
+        curr->plane.setNormal(- curr->plane.getNormal());
     }
     curr->isMarked = true;
     glm::vec3 c1 = curr->plane.getCenter();

@@ -21,6 +21,14 @@ public:
     void AssignCostOnEdges();
     void AssignTangentPlanesOrientation();
 
+    int nbPoints() const {return m_N;}
+    double minX() const {return min_X;};
+    double minY() const {return min_Y;};
+    double minZ() const {return min_Z;};
+    double maxX() const {return max_X;};
+    double maxY() const {return max_Y;};
+    double maxZ() const {return max_Z;};
+
 protected:
     // Attributes
     int m_N;                                    /// Number of points in the set
