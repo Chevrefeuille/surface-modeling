@@ -577,3 +577,39 @@ glm::vec3 BarthFunction::EvalDev(glm::vec3 p) const
 }
 
 
+DistanceFunction::DistanceFunction(DataSet DS): 
+    m_DS(DS)
+{
+}
+
+DistanceFunction::~DistanceFunction()
+{
+
+}
+
+float DistanceFunction::Eval(glm::vec3 p) const
+{
+    int N = m_DS.nbPoints();
+    std::vector<Plane> planes = m_DS.getTangentPlanes();
+   
+    Plane min_plane = planes[0];
+    int min_distance = glm::distance(p, min_plane.getCenter());
+
+    for (int i = 1; i < N; i++) {
+		glm::vec3 x = planes[i].getCenter();
+		double distance = glm::distance(p, x);
+
+        if (distance < min_distance) {
+            min_distance = distance;
+            min_plane = planes[i];
+        }
+	}
+    return glm::dot((p - min_plane.getCenter()), min_plane.getNormal());
+}
+
+glm::vec3 DistanceFunction::EvalDev(glm::vec3 p) const
+{
+    return EvalDevFiniteDiff(p);
+}
+
+
