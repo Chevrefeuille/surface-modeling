@@ -51,6 +51,7 @@ class Graph
 public:
     Graph();
     vertices_map* work;
+    VertexG* maxZCenter;
     void addVertex(const Plane& plane);
     void addEdge(const Plane& from, const Plane& to, double cost);
     void printGraph();

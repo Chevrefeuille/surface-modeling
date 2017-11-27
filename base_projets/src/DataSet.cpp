@@ -29,7 +29,7 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 }
 
 DataSet::DataSet(const char* filename) :
-	m_K(7)
+	m_K(4)
 {
 	FILE *file;
 	int error;
@@ -182,6 +182,7 @@ void DataSet::ComputeEMST() {
 	}
     //m_graph.printGraph();
     m_graph.computeMSTwithPrim();
+
 }
 
 std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
@@ -231,7 +232,6 @@ void DataSet::AddKNeighborsEdges() {
 		}
 	}
 	//m_graph.printGraph();
-    m_graph.writingPlanesIntoFile();
 }
 
 void DataSet::AssignCostOnEdges() {
@@ -247,6 +247,6 @@ void DataSet::AssignCostOnEdges() {
 
 void DataSet::AssignTangentPlanesOrientation() {
     m_graph.computeMSTwithPrim();
-    m_graph.DFS(m_graph.work->begin()->second, NULL);
-	//m_graph.writingPlanesIntoFile();
+    m_graph.DFS(m_graph.maxZCenter, NULL);
+	m_graph.writingPlanesIntoFile();
 }
