@@ -598,8 +598,9 @@ float DistanceFunction::Eval(glm::vec3 p) const
     for (int i = 1; i < N; i++) {
 		glm::vec3 x = planes[i].getCenter();
 		double distance = glm::distance(p, x);
-
+        //std::cout << x.x << ", " << x.y << ", " << x.z << " -> " << distance <<  std::endl;
         if (distance < min_distance) {
+            //std::cout << x.x << ", " << x.y << ", " << x.z << std::endl;
             min_distance = distance;
             min_plane = planes[i];
         }

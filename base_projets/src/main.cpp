@@ -18,11 +18,15 @@ int main()
     // Data Set creation
     DataSet ds("../data/sphere.data");
     ds.ComputeTangentPlanes();
+    ds.ComputeEMST();
+    //ds.AddKNeighborsEdges();
+    //ds.AssignCostOnEdges();
+    //ds.AssignTangentPlanesOrientation();
+   
+    DistanceFunction f(ds);
 
-   ds.ComputeEMST();
-   //ds.AddKNeighborsEdges();
-   //ds.AssignCostOnEdges();
-   //ds.AssignTangentPlanesOrientation();
+    glm::vec3 v(1,0,0);
+    std::cout << "f(v) = " << f.Eval(v) << std::endl;
 
     // SphereFunction f(vec3(0,0,0), 1);
     // printf("valIn = %lf\n", f.Eval(vec3(0.99,0,0)));
