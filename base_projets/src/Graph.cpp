@@ -15,7 +15,7 @@ void Graph::addVertex(const Plane& p)
     {
         //std::cout << "New Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ")" << std::endl;
         VertexG *v;
-        v = new VertexG(p, INF, false, false);
+        v = new VertexG(p, INF, false, NULL, false);
         (*work)[p] = v;
 
         if (maxZCenter == NULL || v->plane.getCenter().z > maxZCenter->plane.getCenter().z) {
@@ -42,8 +42,8 @@ void Graph::computeMSTwithPrim() {
         VertexG* u = it->second;
         u->isInMST = false;
         u->cost = INF;
+        u->prev = NULL;
     }
-    Graph* MST = new Graph();
     VertexG* start = work->begin()->second;
     std::priority_queue<VertexG*, std::vector<VertexG*>, GreaterThanByCost> queue;
     start->cost = 0;
@@ -56,21 +56,31 @@ void Graph::computeMSTwithPrim() {
         t->isInMST = true;
         for (std::vector<ve>::iterator it = t->adj.begin() ; it != t->adj.end(); ++it) {
             VertexG* u = it->second;
-            if (!u->isInMST && u->cost > it->first) {
-                //std::cout << t->coordinates.x << " " << t->coordinates.y << " " << t->coordinates.z << std::endl;
-                //std::cout << u->coordinates.x << " " << u->coordinates.y << " " << u->coordinates.z << std::endl;
+            double dist = it->first;
+            if (!u->isInMST && u->cost > dist) {
+                //std::cout << t->plane.getCenter().x << " " << t->plane.getCenter().y << " " << t->plane.getCenter().z << std::endl;
+                //std::cout << u->plane.getCenter().x << " " << u->plane.getCenter().y << " " << u->plane.getCenter().z << std::endl;
+                //std::cout << it->first << std::endl;
                 //std::cout << std::endl;
                 u->cost = it->first;
-                MST->addVertex(t->plane);
-                MST->addVertex(u->plane);
-                MST->addEdge(t->plane, u->plane, it->first);
-                MST->addEdge(u->plane, t->plane, it->first);
+                u->prev = t;
                 queue.push(u);
             }
         }
     }
+    Graph* MST = new Graph();
+    for (vertices_map::iterator itr = work->begin(); itr !=  work->end(); ++itr) {
+        if (itr->second->prev != NULL) {
+            Plane u_plane = itr->second->plane;
+            Plane v_plane = itr->second->prev->plane;
+            double cost = itr->second->cost;
+            MST->addVertex(u_plane);
+            MST->addVertex(v_plane);
+            MST->addEdge(u_plane, v_plane, cost);
+            MST->addEdge(v_plane, u_plane, cost);
+        }
+    }
     *this = *MST;
-    //printGraph();
 }
 
 void Graph::DFS(VertexG* curr, VertexG* prev) {
@@ -81,7 +91,15 @@ void Graph::DFS(VertexG* curr, VertexG* prev) {
         curr->plane.setNormal(- curr->plane.getNormal());
     }
     curr->isMarked = true;
-    glm::vec3 c1 = curr->plane.getCenter();
+
+    // glm::vec3 center = curr->plane.getCenter();
+    // glm::vec3 normal = curr->plane.getNormal();
+    // std::ofstream myfile ("../example.txt", std::ios_base::app);
+    // if (myfile.is_open()) {
+    //     myfile << center.x << " " << center.y << " " << center.z << " " << normal.x << " " << normal.y << " " << normal.z << std::endl;
+    // }
+    // myfile.close();
+
     //std::cout << "(" << c1.x << ", " << c1.y << ", " << c1.z << ")" << std::endl;
     for (std::vector<ve>::iterator it = curr->adj.begin() ; it != curr->adj.end(); ++it) {
         VertexG* u = it->second;
