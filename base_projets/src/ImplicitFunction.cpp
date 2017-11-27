@@ -58,7 +58,8 @@ SphereFunction::~SphereFunction()
 
 float SphereFunction::Eval(glm::vec3 p) const
 {
-    return exp(-dot(p - m_centre, p - m_centre) / m_radius / m_radius);
+    //return exp(-dot(p - m_centre, p - m_centre) / m_radius / m_radius);
+    return (p[0]-m_centre[0])*(p[0]-m_centre[0])+(p[1]-m_centre[1])*(p[1]-m_centre[1])+(p[2]-m_centre[2])*(p[2]-m_centre[2])-m_radius*m_radius;
 }
 
 glm::vec3 SphereFunction::EvalDev(glm::vec3 p) const
@@ -574,10 +575,5 @@ glm::vec3 BarthFunction::EvalDev(glm::vec3 p) const
 {
     return EvalDevFiniteDiff(p);
 }
-
-
-
-
-
 
 
