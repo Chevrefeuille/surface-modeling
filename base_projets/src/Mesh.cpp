@@ -257,11 +257,11 @@ Mesh Mesh::postProcess(const double epsilon) {
 
     double inscribedCercleRadius;
     double edgeAspectRatio[3*n];
-    unsigned int orderedIndexEdgeAspectRatio[n]; // Prenons uniquement les n premiers ratios
-    double orderedEdgeAspectRatio[n];
-    vec3 p1,p2, p3;
+    unsigned int orderedIndexEdgeAspectRatio[n];
+    double* orderedEdgeAspectRatio2 = new double[n];
+    vec3 p1, p2, p3;
 
-
+/*
     for (int i = 0; i < 3*n; i++) {
         // 0 : p2 - p1
         // 1 : p3 - p2
@@ -324,7 +324,7 @@ Mesh Mesh::postProcess(const double epsilon) {
          // On fait pointer les anciens sommets ip1 et ip2 vers N
          this->collapseEdge(ip1, ip2, N);
      }
-
+*/
 	 return *this;
 }
 
