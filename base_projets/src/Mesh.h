@@ -46,8 +46,9 @@ public:
     Mesh(const ImplicitFunction& function, double minX, double maxX, double minY, double maxY,
     		double minZ, double maxZ, const unsigned int resX = 100, const unsigned int resY=100,
     		const unsigned int resZ=100); /// imports a mesh from an isofunction, coord limits and resolution
+    void ProcessTetrahedron2(const ImplicitFunction& function, const glm::vec3 p[]);
     void collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex);
-    Mesh postProcess(double epsilon); // Collapse Edges using an aspect ratio criterion
+    Mesh postProcess(const double epsilon); // Collapse Edges using an aspect ratio criterion
 };
 
 #endif // MESH_H

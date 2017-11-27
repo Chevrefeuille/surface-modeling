@@ -44,15 +44,12 @@ vec3 findRoot(const ImplicitFunction& function, const float isoValue, const vec3
 /**
  * Calcule les points approchant l'isovalue de function sur le tétrahèdre défini par les 4 points de p[]
  */
-void ProcessTetrahedron2(vector<vec3> vecPositions,
-		vector<vec3> vecNormals,
-		vector<uint> vecIndices,
-		const ImplicitFunction& function, const vec3 p[]) {
+void Mesh::ProcessTetrahedron2(const ImplicitFunction& function, const vec3 p[]) {
 
 	// Vecteur donnant les signes des images par f de chacun des points du tétrahèdre
 	bool b[4] = {function.Eval(p[0]) > 0.0, function.Eval(p[1]) > 0.0, function.Eval(p[2]) > 0.0, function.Eval(p[3]) > 0.0};
 
-	unsigned int N = vecPositions.size();
+	unsigned int N = m_positions.size();
 
 	// ** Distinction des cas selon le signe des images par f des 4 points du tétrahèdre : ** //
 
@@ -67,30 +64,29 @@ void ProcessTetrahedron2(vector<vec3> vecPositions,
 			vec3 p0 = findRoot(function, 0.0, p[i], p[(i+1)%4]);
 			vec3 p1 = findRoot(function, 0.0, p[i], p[(i+2)%4]);
 			vec3 p2 = findRoot(function, 0.0, p[i], p[(i+3)%4]);
-			vecPositions.push_back(p0);
-			vecPositions.push_back(p1);
-			vecPositions.push_back(p2);
+            m_positions.push_back(p0);
+            m_positions.push_back(p1);
+            m_positions.push_back(p2);
 
 			// Choix orientation des normales : -
 			vec3 n0 = glm::normalize(-function.EvalDev(p0));
 			vec3 n1 = glm::normalize(-function.EvalDev(p1));
 			vec3 n2 = glm::normalize(-function.EvalDev(p2));
-			vecNormals.push_back(n0);
-			vecNormals.push_back(n1);
-			vecNormals.push_back(n2);
+			m_normals.push_back(n0);
+            m_normals.push_back(n1);
+            m_normals.push_back(n2);
 
 			// Indices dans ordre trigo
 			if(dot(cross(p1-p0, p2-p0), n0+n1+n2)>0) {
-				vecIndices.push_back(N);
-				vecIndices.push_back(N+1);
-				vecIndices.push_back(N+2);
+				m_indices.push_back(N);
+                m_indices.push_back(N+1);
+                m_indices.push_back(N+2);
 			}
 			else {
-				vecIndices.push_back(N);
-				vecIndices.push_back(N+2);
-				vecIndices.push_back(N+1);
+                m_indices.push_back(N);
+                m_indices.push_back(N+2);
+                m_indices.push_back(N+1);
 			}
-
 			return;
 		}
 	}
@@ -121,41 +117,40 @@ void ProcessTetrahedron2(vector<vec3> vecPositions,
 			// Si les points pi et pj ont leur image de même signe
 			// On forme un quadrilatère
 			if(b[i] && b[j] && !b[k] && !b[l] || !b[i] && !b[j] && b[k] && b[l]) {
-				//
 				vec3 p0 = findRoot(function, 0.0, p[i], p[k]);
 				vec3 p1 = findRoot(function, 0.0, p[i], p[l]);
 				vec3 p2 = findRoot(function, 0.0, p[j], p[k]);
 				vec3 p3 = findRoot(function, 0.0, p[j], p[l]);
-				vecPositions.push_back(p0);
-				vecPositions.push_back(p1);
-				vecPositions.push_back(p2);
-				vecPositions.push_back(p3);
+                m_positions.push_back(p0);
+                m_positions.push_back(p1);
+                m_positions.push_back(p2);
+                m_positions.push_back(p3);
 
 				vec3 n0 = glm::normalize(-function.EvalDev(p0));
 				vec3 n1 = glm::normalize(-function.EvalDev(p1));
 				vec3 n2 = glm::normalize(-function.EvalDev(p2));
 				vec3 n3 = glm::normalize(-function.EvalDev(p3));
-				vecNormals.push_back(n0);
-				vecNormals.push_back(n1);
-				vecNormals.push_back(n2);
-				vecNormals.push_back(n3);
+                m_normals.push_back(n0);
+                m_normals.push_back(n1);
+                m_normals.push_back(n2);
+                m_normals.push_back(n3);
 
 				if(dot(cross(p2-p0, p3-p0), n0+n3+n2)>0) {
-					vecIndices.push_back(N);
-					vecIndices.push_back(N+2);
-					vecIndices.push_back(N+3);
+                    m_indices.push_back(N);
+                    m_indices.push_back(N+2);
+                    m_indices.push_back(N+3);
 
-					vecIndices.push_back(N);
-					vecIndices.push_back(N+3);
-					vecIndices.push_back(N+1);
+                    m_indices.push_back(N);
+                    m_indices.push_back(N+3);
+                    m_indices.push_back(N+1);
 				} else {
-					vecIndices.push_back(N);
-					vecIndices.push_back(N+3);
-					vecIndices.push_back(N+2);
+                    m_indices.push_back(N);
+                    m_indices.push_back(N+3);
+                    m_indices.push_back(N+2);
 
-					vecIndices.push_back(N);
-					vecIndices.push_back(N+1);
-					vecIndices.push_back(N+3);
+                    m_indices.push_back(N);
+                    m_indices.push_back(N+1);
+                    m_indices.push_back(N+3);
 				}
 
 				return;
@@ -178,14 +173,14 @@ Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double mi
 
 	// Boucles correspondant au marching cubes (découpage en cubes)
 	for(unsigned int i=0; i < resX; i++) {
-		float x0 = float(i  )/resX * (maxX - minX) + minX;
-		float x1 = float(i+1)/resX * (maxX - minX) + minX;
+        double x0 = double(i  )/resX * (maxX - minX) + minX;
+        double x1 = double(i+1)/resX * (maxX - minX) + minX;
 		for(unsigned int j=0; j < resY; j++) {
-			float y0 = float(j  )/resY * (maxY - minY) + minY;
-			float y1 = float(j+1)/resY * (maxY - minY) + minY;
+            double y0 = double(j  )/resY * (maxY - minY) + minY;
+            double y1 = double(j+1)/resY * (maxY - minY) + minY;
 			for(unsigned int k=0; k < resZ; k++) {
-				float z0 = float(k  )/resZ * (maxZ - minZ) + minZ;
-				float z1 = float(k+1)/resZ * (maxZ - minZ) + minZ;
+                double z0 = double(k  )/resZ * (maxZ - minZ) + minZ;
+                double z1 = double(k+1)/resZ * (maxZ - minZ) + minZ;
 
 				// Les 8 points du cube défini par (i,j,k)
 				vec3 p000 = vec3(x0, y0, z0);
@@ -206,18 +201,18 @@ Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double mi
 				vec3 p5[4] =  {p000, p101, p001, p111};
 
 				// Marching tetrahedra
-				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p0);
-				ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p1);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p2);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p3);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p4);
-	            ProcessTetrahedron2(m_positions, m_normals, m_indices, function, p5);
+				this->ProcessTetrahedron2(function, p0);
+                this->ProcessTetrahedron2(function, p1);
+                this->ProcessTetrahedron2(function, p2);
+                this->ProcessTetrahedron2(function, p3);
+                this->ProcessTetrahedron2(function, p4);
+                this->ProcessTetrahedron2(function, p5);
 			}
 		}
 	}
 }
 
-double inscribedCercleRadiusOfTriangle(vec3 p1, vec3 p2, vec3 p3) {
+double inscribedCercleRadiusOfTriangle(const vec3& p1, const vec3& p2, const vec3& p3) {
     double areaTriangle = length(cross(p2-p1, p3-p1))/2;
     double halfPerimeter = length(p2-p1) + length(p3-p2) + length(p3-p1);
     halfPerimeter/=2;
@@ -229,39 +224,43 @@ double inscribedCercleRadiusOfTriangle(vec3 p1, vec3 p2, vec3 p3) {
  * On fait pointer les anciens index sur le nouvel index
  */
 void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex) {
-    unsigned int n = this->m_positions.size() / 3;
+    unsigned int n = m_indices.size() / 3;
     for (int i = 0; i < n; i++) {
         // Si le triangle contient les 2 sommets à unifier:
-        if (this->m_indices[i] == oldIndex1 || this->m_indices[i+1] == oldIndex1 || this->m_indices[i+2] == oldIndex1) {
-            if (this->m_indices[i] == oldIndex2 || this->m_indices[i+1] == oldIndex2 || this->m_indices[i+2] == oldIndex2) {
-
+        if (m_indices[i] == oldIndex1 || m_indices[i+1] == oldIndex1 || m_indices[i+2] == oldIndex1) {
+            if (m_indices[i] == oldIndex2 || m_indices[i+1] == oldIndex2 || m_indices[i+2] == oldIndex2) {
+                m_indices.erase(m_indices.begin()+i, m_indices.begin()+i+3);
+                n-=3;
             }
-        }
-
-        if (this->m_indices[i] == oldIndex1 || this->m_indices[i] == oldIndex2) {
-            this->m_indices[i] = newIndex;
-        }
-        if (this->m_indices[i+1] == oldIndex1 || this->m_indices[i+1] == oldIndex2) {
-            this->m_indices[i+1] = newIndex;
-        }
-        if (this->m_indices[i+2] == oldIndex1 || this->m_indices[i+2] == oldIndex2) {
-            this->m_indices[i+2] = newIndex;
+        } else {
+            if (m_indices[i] == oldIndex1 || m_indices[i] == oldIndex2) {
+                m_indices[i] = newIndex;
+            }
+            if (m_indices[i + 1] == oldIndex1 || m_indices[i + 1] == oldIndex2) {
+                m_indices[i + 1] = newIndex;
+            }
+            if (m_indices[i + 2] == oldIndex1 || m_indices[i + 2] == oldIndex2) {
+                m_indices[i + 2] = newIndex;
+            }
         }
 
     }
 }
 
-Mesh Mesh::postProcess(double epsilon) {
-    // Supprime les points en double et fait la correspondance avec les indices
-    this->RemoveDouble();
+Mesh Mesh::postProcess(const double epsilon) {
+    // Supprime les points en double et refait la correspondance avec les indices
+    //this->RemoveDouble();
     //MeshHE m_he(*this);
     //return m_he;
 
-    unsigned int n = m_positions.size()/3;
+    unsigned int n = m_indices.size()/3;
+
     double inscribedCercleRadius;
-    double edgeAspectRatio [3*n];
-    unsigned int orderedIndexEdgeAspectRatio[3*n];
-    vec3 p1, p2, p3;
+    double edgeAspectRatio[3*n];
+    unsigned int orderedIndexEdgeAspectRatio[n]; // Prenons uniquement les n premiers ratios
+    double orderedEdgeAspectRatio[n];
+    vec3 p1,p2, p3;
+
 
     for (int i = 0; i < 3*n; i++) {
         // 0 : p2 - p1
@@ -277,39 +276,56 @@ Mesh Mesh::postProcess(double epsilon) {
     }
 
     // Indicage edgeAspectRatio par ordre croissant
+    unsigned int minIndex = 0; double minRatio = edgeAspectRatio[0];
+    for (unsigned int i = 0; i < n; i++) {
+        for (unsigned int j = 1; j < 3*n; j++) {
+            if (edgeAspectRatio[j] < minRatio) {
+                minRatio = edgeAspectRatio[j];
+                minIndex = j;
+            }
+        }
+        orderedIndexEdgeAspectRatio[i] = minIndex;
+        orderedEdgeAspectRatio[i] = minRatio;
+        edgeAspectRatio[minIndex] = 1;
+        minIndex = 0; minRatio = edgeAspectRatio[0];
+    }
 
+    for (int i = 0; i<n; i++)
+        printf("ratio = %lf\n", orderedEdgeAspectRatio[i]);
 
-    // Elimination des arretes aux plus petit ratio
-    // double ratio;
-    // unsigned int indexEdge, ip1, ip2;
-    // unsigned int N;
-    // for (int i = 0; i < 3*n; i++) {
-    //     indexEdge = orderedIndexEdgeAspectRatio[i];
-    //     ratio = edgeAspectRatio[indexEdge];
-    //     if (ratio >= epsilon) {break;}
-    //
-    //     // indices points à "unifier" :
-    //     if (indexEdge % 3 == 0) {
-    //         ip1 = m_indices[indexEdge];
-    //         ip2 = m_indices[indexEdge+1];
-    //     } else if (indexEdge % 3 == 1) {
-    //         ip1 = m_indices[indexEdge];
-    //         ip2 = m_indices[indexEdge+1];
-    //     } else {
-    //         ip1 = m_indices[indexEdge];
-    //         ip2 = m_indices[indexEdge-2];
-    //     }
-    //
-    //     // Nouveau point = milieu des 2 anciens points
-    //     p3 = (m_positions[ip1] + m_positions[ip2]) / 2;
-    //     N = m_positions.size(); // indice du nouveau point p3
-    //     m_indices.push_back(N);
-    //     m_positions.push_back(p3);
-    //     // On fait pointer les anciens sommets ip1 et ip2 vers N
-    //     this->collapseEdge(ip1, ip2, N);
-    // }
-    //
-	// return *this;
+     //Elimination des arretes aux plus petit ratio
+     double ratio;
+     unsigned int indexEdge, ip1, ip2;
+     unsigned int N;
+     for (int i = 0; i < n; i++) {
+         indexEdge = orderedIndexEdgeAspectRatio[i];
+         ratio = orderedEdgeAspectRatio[i];
+         if (ratio >= epsilon) {break;}
+
+         printf("Collapsing edge of ratio %lf", ratio);
+
+         // indices points à "unifier" :
+         if (indexEdge % 3 == 0) {
+             ip1 = m_indices[indexEdge];
+             ip2 = m_indices[indexEdge+1];
+         } else if (indexEdge % 3 == 1) {
+             ip1 = m_indices[indexEdge];
+             ip2 = m_indices[indexEdge+1];
+         } else {
+             ip1 = m_indices[indexEdge];
+             ip2 = m_indices[indexEdge-2];
+         }
+
+         // Nouveau point = milieu des 2 anciens points
+         p3 = (m_positions[ip1] + m_positions[ip2]) / (float)2;
+         N = m_positions.size(); // indice du nouveau point p3
+         m_indices.push_back(N);
+         m_positions.push_back(p3);
+         // On fait pointer les anciens sommets ip1 et ip2 vers N
+         this->collapseEdge(ip1, ip2, N);
+     }
+
+	 return *this;
 }
 
 
