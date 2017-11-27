@@ -77,8 +77,7 @@ void Graph::DFS(VertexG* curr, VertexG* prev) {
     glm::vec3 currNormal = curr->plane.getNormal();
     if (prev == NULL) {
         curr->plane.setNormal(abs(curr->plane.getNormal()));
-    } else if (prev != NULL &&  glm::dot(prev->plane.getNormal(), currNormal) < 0) {
-        //std::cout << "Inverting the normal" << std::endl;
+    } else if (glm::dot(prev->plane.getNormal(), currNormal) < 0) {
         curr->plane.setNormal(- curr->plane.getNormal());
     }
     curr->isMarked = true;

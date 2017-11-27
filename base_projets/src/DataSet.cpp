@@ -69,14 +69,6 @@ DataSet::DataSet(const char* filename) :
 		if (m_points[i][2]>max_Z) {max_Z=m_points[i][2];}
 
 	}
-
-	// for (int i = 0; i < m_N; i++) {
-	// 	std::cout << "row:" << i << std::endl;
-	// 	for (int j = 0; j < m_N; j++) {
-	// 		std::cout << m_distances[i][j] << std::endl;
-	// 	}
-	// }
-
     fclose(file);
 }
 
@@ -106,7 +98,8 @@ std::vector<glm::vec3> DataSet::ComputeNhbd(glm::vec3 x) {
 
 glm::vec3 DataSet::ComputeCentroid(std::vector<glm::vec3> points) {
 	glm::vec3 o;
-	for (int i = 0; i < m_K + 1; i++) {
+    int N = points.size();
+	for (int i = 0; i < N; i++) {
 		glm::vec3 x2 = points[i];
 		// std::cout << x2[0] << ", " << x2[1] << ", " << x2[2] << std::endl;
 		o += x2;
@@ -134,10 +127,19 @@ glm::vec3 DataSet::ComputeTangent(std::vector<glm::vec3> points, glm::vec3 o) {
 	// compute eigenvalues of the covariance matrix
 	Eigen::EigenSolver<Eigen::MatrixXd> es(CV);
 	//std::cout << "The eigenvalues of CV are:" << std::endl << es.eigenvalues() << std::endl;
+    int min_i = 0;
+    float min_eigenvalue = std::abs(es.eigenvalues()[0]);
+    for (int i = 1; i < 3; i++) {
+        float eigenvalue = std::abs(es.eigenvalues()[i]);
+        if (eigenvalue < min_eigenvalue) {
+            min_eigenvalue = eigenvalue;
+            min_i = i;
+        }
+    }
 	//std::cout << "The matrix of eigenvectors, V, is:" << std::endl << es.eigenvectors() << std::endl << std::endl;
 
 	// extract the third eigen vector
-	Eigen::VectorXcd v = es.eigenvectors().col(2);
+	Eigen::VectorXcd v = es.eigenvectors().col(min_i);
 	glm::vec3 n(3);
 	for (int i = 0; i < 3; i++) {
 		n[i] = v(i).real();
@@ -180,7 +182,7 @@ void DataSet::ComputeEMST() {
 	}
     //m_graph.printGraph();
     m_graph.computeMSTwithPrim();
-	m_graph.writingPlanesIntoFile();
+
 }
 
 std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
@@ -246,5 +248,5 @@ void DataSet::AssignCostOnEdges() {
 void DataSet::AssignTangentPlanesOrientation() {
     m_graph.computeMSTwithPrim();
     m_graph.DFS(m_graph.maxZCenter, NULL);
-	//m_graph.writingPlanesIntoFile();
+	m_graph.writingPlanesIntoFile();
 }

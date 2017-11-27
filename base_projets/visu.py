@@ -16,6 +16,9 @@ with open("example.txt") as f:
 for x in content:
     tmp = x.replace("\n", "").split()
     x = [float(i) for i in tmp]
+    #point  = np.array([x[0], x[1], x[2]])
+    #normal = np.array([x[3], x[4], x[5]])
+    #d = -point.dot(normal)
     centers_x.append(x[0])
     centers_y.append(x[1])
     centers_z.append(x[2])
@@ -30,6 +33,6 @@ for x in content:
 #print(normals)
 fig = plt.figure()
 ax = Axes3D(fig)
-ax.quiver(centers_x, centers_y, centers_z, dx, dy, dz, length=0.3)
+ax.quiver(centers_x, centers_y, centers_z, dx, dy, dz, length=0.3, pivot="tail")
 ax.scatter(centers_x, centers_y, centers_z)
 plt.show()
