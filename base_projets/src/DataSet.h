@@ -15,6 +15,8 @@ public:
     // Constructors
     DataSet(){}                        /// Empty constructor
     DataSet(const char* filename);     /// Imports a dataset from a data file
+    ~DataSet();            
+
     Plane ComputeTangentPlanes();
     void ComputeEMST();
     void AddKNeighborsEdges();
@@ -22,6 +24,7 @@ public:
     void AssignTangentPlanesOrientation();
 
     std::vector<Plane> getTangentPlanes() const {return m_tangentPlanes;};
+    Graph* getGraph() const {return m_graph;}
 
     int nbPoints() const {return m_N;}
     double minX() const {return min_X;};
@@ -38,7 +41,7 @@ protected:
     std::vector<glm::vec3> m_points;             /// Container for the vertices positions
     std::vector<Plane> m_tangentPlanes;
 
-    Graph m_graph;
+    Graph* m_graph;
     // min/max coordinate values in each direction
     double min_X, min_Y, min_Z, max_X, max_Y, max_Z;
 

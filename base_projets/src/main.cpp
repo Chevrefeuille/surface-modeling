@@ -114,8 +114,8 @@ int main()
     //-------------------------------------------------
     // OpenGL Initialization
 
-    glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
-//    glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
+    //glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
+    glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
     glEnable(GL_DEPTH_TEST);
 
 
@@ -137,17 +137,35 @@ int main()
     //float x = 1.8;
     //Mesh m; m.CreateIsoSurface(m, bf, -0.2, -x, x, -x, x, -x ,x, 100, 100, 100);
 
-    DataSet ds("../data/sphere.data");
-    //
+    DataSet ds("../data/bear.data");
+
     ds.ComputeTangentPlanes();
     ds.ComputeEMST();
     ds.AddKNeighborsEdges();
-    ds.AssignCostOnEdges();
-    ds.AssignTangentPlanesOrientation();
+    // ds.AssignCostOnEdges();
+    // ds.AssignTangentPlanesOrientation();
 
-    DistanceFunction f(ds);
+    //DistanceFunction f(ds);
+    glm::vec3 c(0, 0, 0);
+    SphereFunction fs(c, 1);
 
-    Mesh m; m.CreateIsoSurface(m, f, 0, ds.minX(), ds.maxX(), ds.minY(), ds.maxY(), ds.minZ() ,ds.maxZ(), 20, 20, 20);
+    //std::cout << ds.minX() << std::endl;
+
+    Mesh m; m.CreateIsoSurface(m, fs, 0, ds.minX(), ds.maxX(), ds.minY(), ds.maxY(), ds.minZ(), ds.maxZ(), 20, 20, 20);
+    //glm::vec3 test(0, 0, 1);
+    //std::cout << "Sphere function: " << fs.Eval(test) << ", our function: " << f.Eval(test) << std::endl;
+
+    /** Mesh creation from data set and iso function **/
+    // double minX = ds.minX(); double minY = ds.minY(); double minZ = ds.minZ();
+    // double maxX = ds.maxX(); double maxY = ds.maxY(); double maxZ = ds.maxZ();
+    // const unsigned int resX = 10;
+    // const unsigned int resY = 10;
+    // const unsigned int resZ = 10;
+    // minX-=2.*(maxX-minX)/resX; minY-=2.*(maxY-minY)/resY; minZ-=2.*(maxZ-minZ)/resZ;
+    // maxX+=2.*(maxX-minX)/resX; maxY+=2.*(maxY-minY)/resY; maxZ+=2.*(maxZ-minZ)/resZ;
+
+    //Mesh m(fs, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    //printf("Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
 
     m.Normalize();
     m.ComputeNormals();

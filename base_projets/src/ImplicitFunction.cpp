@@ -577,7 +577,7 @@ glm::vec3 BarthFunction::EvalDev(glm::vec3 p) const
 }
 
 
-DistanceFunction::DistanceFunction(DataSet DS): 
+DistanceFunction::DistanceFunction(DataSet DS):
     m_DS(DS)
 {
 }
@@ -589,28 +589,26 @@ DistanceFunction::~DistanceFunction()
 
 float DistanceFunction::Eval(glm::vec3 p) const
 {
-    int N = m_DS.nbPoints();
-    std::vector<Plane> planes = m_DS.getTangentPlanes();
-   
-    Plane min_plane = planes[0];
-    int min_distance = glm::distance(p, min_plane.getCenter());
 
-    for (int i = 1; i < N; i++) {
-		glm::vec3 x = planes[i].getCenter();
+    Plane min_plane = m_DS.getGraph()->work->begin()->second->plane;
+    double min_distance = glm::distance(p, min_plane.getCenter());
+    //std::cout << p.x << ", " << p.y << ", " << p.z <<  std::endl;
+    for (vertices_map::iterator it = m_DS.getGraph()->work->begin(); it != m_DS.getGraph()->work->end(); ++it) {
+        Plane plane = it->second->plane;
+        glm::vec3 x = plane.getCenter();
 		double distance = glm::distance(p, x);
-        //std::cout << x.x << ", " << x.y << ", " << x.z << " -> " << distance <<  std::endl;
+        //std::cout << x.x << ", " << x.y << ", " << x.z << " -> " << distance << " " << min_distance << std::endl;
         if (distance < min_distance) {
-            //std::cout << x.x << ", " << x.y << ", " << x.z << std::endl;
+            //std::cout << "Closer: " << x.x << ", " << x.y << ", " << x.z << " -> " << distance << std::endl;
             min_distance = distance;
-            min_plane = planes[i];
+            min_plane = plane;
         }
-	}
-    return glm::dot((p - min_plane.getCenter()), min_plane.getNormal());
+    }
+    //std::cout << glm::dot((p - min_plane.getCenter()), min_plane.getNormal()) << std::endl;
+    return -glm::dot((p - min_plane.getCenter()), min_plane.getNormal());
 }
 
 glm::vec3 DistanceFunction::EvalDev(glm::vec3 p) const
 {
     return EvalDevFiniteDiff(p);
 }
-
-

@@ -8,6 +8,10 @@ Graph::Graph() {
   maxZCenter = NULL;
 }
 
+Graph::~Graph() {
+    delete work;
+}
+
 void Graph::addVertex(const Plane& p)
 {
     vertices_map::iterator search =  work->find(p);

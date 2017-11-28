@@ -31,6 +31,8 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 DataSet::DataSet(const char* filename) :
 	m_K(4)
 {
+
+    m_graph = new Graph();
 	FILE *file;
 	int error;
     int nb_points;
@@ -72,6 +74,9 @@ DataSet::DataSet(const char* filename) :
     fclose(file);
 }
 
+DataSet::~DataSet() {
+    delete m_graph;
+}
 
 std::vector<glm::vec3> DataSet::ComputeNhbd(glm::vec3 x) {
 	std::vector<POINT_AND_DISTANCE> points_and_distances(m_N);
@@ -170,18 +175,18 @@ void DataSet::ComputeEMST() {
 	for (int i = 0; i < m_N; i++) {
 		Plane pi = m_tangentPlanes[i];
 		glm::vec3 vi = pi.getCenter();
-		m_graph.addVertex(pi);
+		m_graph->addVertex(pi);
 		for (int j = 0; j < m_N; j++) {
 			Plane pj = m_tangentPlanes[j];
-			m_graph.addVertex(pj);
+			m_graph->addVertex(pj);
 			glm::vec3 vj = pj.getCenter();
 			double distance = glm::distance(vi, vj);
-			m_graph.addEdge(pi, pj, distance);
+			m_graph->addEdge(pi, pj, distance);
 			//std::cout << distance << std::endl;
 		}
 	}
-    m_graph.computeMSTwithPrim();
-    //m_graph.DFS(m_graph.maxZCenter, NULL);
+    m_graph->computeMSTwithPrim();
+    //m_graph->DFS(m_graph->maxZCenter, NULL);
 
 }
 
@@ -228,25 +233,25 @@ void DataSet::AddKNeighborsEdges() {
             glm::vec3 vj = pj.getCenter();
             //std::cout << vj.x << ", " << vj.y << ", " << vj.z << std::endl;
             double distance = glm::distance(vi, vj);
-			m_graph.addEdge(pi, pj, distance);
+			m_graph->addEdge(pi, pj, distance);
 		}
 	}
-	//m_graph.printGraph();
+	//m_graph->printGraph();
 }
 
 void DataSet::AssignCostOnEdges() {
-    for (vertices_map::iterator it_vertices = m_graph.work->begin(); it_vertices != m_graph.work->end(); ++it_vertices) {
+    for (vertices_map::iterator it_vertices = m_graph->work->begin(); it_vertices != m_graph->work->end(); ++it_vertices) {
         VertexG* u = it_vertices->second;
         for (std::vector<ve>::iterator it_neighbors = u->adj.begin() ; it_neighbors != u->adj.end(); ++it_neighbors) {
             VertexG* v = it_neighbors->second;
             it_neighbors->first = 1 - abs(glm::dot(u->plane.getNormal(), v->plane.getNormal()));
         }
     }
-    //m_graph.printGraph();
+    //m_graph->printGraph();
 }
 
 void DataSet::AssignTangentPlanesOrientation() {
-    m_graph.computeMSTwithPrim();
-    m_graph.DFS(m_graph.maxZCenter, NULL);
-	m_graph.writingPlanesIntoFile();
+    m_graph->computeMSTwithPrim();
+    m_graph->DFS(m_graph->maxZCenter, NULL);
+	m_graph->writingPlanesIntoFile();
 }

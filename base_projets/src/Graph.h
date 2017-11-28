@@ -51,6 +51,7 @@ class Graph
 {
 public:
     Graph();
+    ~Graph();
     vertices_map* work;
     VertexG* maxZCenter;
     void addVertex(const Plane& plane);
