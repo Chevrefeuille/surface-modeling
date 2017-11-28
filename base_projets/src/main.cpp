@@ -16,7 +16,7 @@ using namespace std;
 int main()
 {
     // Data Set creation
-    DataSet ds("../data/sphere.data");
+    DataSet ds("../data/cylindre.data");
     ds.ComputeTangentPlanes();
     ds.ComputeEMST();
     ds.AddKNeighborsEdges();
