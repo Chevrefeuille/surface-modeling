@@ -72,9 +72,6 @@ void Mesh::ProcessTetrahedron2(const ImplicitFunction& function, const vec3 p[])
 			vec3 n0 = glm::normalize(-function.EvalDev(p0));
 			vec3 n1 = glm::normalize(-function.EvalDev(p1));
 			vec3 n2 = glm::normalize(-function.EvalDev(p2));
-			m_normals.push_back(n0);
-            m_normals.push_back(n1);
-            m_normals.push_back(n2);
 
 			// Indices dans ordre trigo
 			if(dot(cross(p1-p0, p2-p0), n0+n1+n2)>0) {
@@ -130,10 +127,6 @@ void Mesh::ProcessTetrahedron2(const ImplicitFunction& function, const vec3 p[])
 				vec3 n1 = glm::normalize(-function.EvalDev(p1));
 				vec3 n2 = glm::normalize(-function.EvalDev(p2));
 				vec3 n3 = glm::normalize(-function.EvalDev(p3));
-                m_normals.push_back(n0);
-                m_normals.push_back(n1);
-                m_normals.push_back(n2);
-                m_normals.push_back(n3);
 
 				if(dot(cross(p2-p0, p3-p0), n0+n3+n2)>0) {
                     m_indices.push_back(N);
@@ -167,9 +160,6 @@ void Mesh::ProcessTetrahedron2(const ImplicitFunction& function, const vec3 p[])
 Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double minY, double maxY,
 		double minZ, double maxZ, const unsigned int resX, const unsigned int resY,
 		const unsigned int resZ) {
-	m_positions = vector<vec3>();
-	m_normals  = vector<vec3>();
-	m_indices    = vector<unsigned int>();
 
 	// Boucles correspondant au marching cubes (découpage en cubes)
 	for(unsigned int i=0; i < resX; i++) {
