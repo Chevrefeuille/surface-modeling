@@ -94,48 +94,45 @@ int main() {
 
 
     //----------------------------------CHANGER ICI---------------------------------------------
-    DistanceFunction f("../data/bear.data");
+    //DistanceFunction f("../data/bear.data");
     glm::vec3 c(0, 0, 0);
-    SphereFunction f2(c, 1);
+    SphereFunction f(c, 1);
 
-    //std::cout << ds.minX() << std::endl;
-
-    Mesh m; m.CreateIsoSurface(m, f2, 0, f.minX(), f.maxX(), f.minY(), f.maxY(), f.minZ(), f.maxZ(), 10, 10, 10);
+    //Mesh m; m.CreateIsoSurface(m, f2, 0, f.minX(), f.maxX(), f.minY(), f.maxY(), f.minZ(), f.maxZ(), 10, 10, 10);
     //glm::vec3 test(0, 0, 1);
     //std::cout << "Sphere function: " << fs.Eval(test) << ", our function: " << f.Eval(test) << std::endl;
 
     /** Mesh creation from data set and iso function **/
     //double minX = ds.minX(); double minY = ds.minY(); double minZ = ds.minZ();
     //double maxX = ds.maxX(); double maxY = ds.maxY(); double maxZ = ds.maxZ();
-//    double minX = -1.; double minY = -1.; double minZ = -1.;
-//    double maxX = 1.; double maxY = 1.; double maxZ = 1.;
-//    const unsigned int resX=50;
-//    const unsigned int resY=50;
-//    const unsigned int resZ=50;
-//    const double epsilon = 1E-6;
-//    minX-=2.*(maxX-minX)/resX; minY-=2.*(maxY-minY)/resY; minZ-=2.*(maxZ-minZ)/resZ;
-//    maxX+=2.*(maxX-minX)/resX; maxY+=2.*(maxY-minY)/resY; maxZ+=2.*(maxZ-minZ)/resZ;
-//
-//    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-//    printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
-//
-//    m.Normalize();
-//    m.ComputeNormals();
-//    m.ColorFromNormals();
-//
-//    unsigned int nbCollapsedEdges = m.postProcess(epsilon);
-//    printf("---> Edge collapsing : %i edges collapsed with ratio < %lf (max collapsed edges: %i)\n", nbCollapsedEdges, epsilon, m.NbFaces());
-//
-//    m.Normalize();
-//    m.ComputeNormals();
-//    m.ColorFromNormals();
+    double minX = -1.; double minY = -1.; double minZ = -1.;
+    double maxX = 1.; double maxY = 1.; double maxZ = 1.;
+    const unsigned int resX=50;
+    const unsigned int resY=50;
+    const unsigned int resZ=50;
+    const double epsilon = 1E-6;
+    minX-=2.*(maxX-minX)/resX; minY-=2.*(maxY-minY)/resY; minZ-=2.*(maxZ-minZ)/resZ;
+    maxX+=2.*(maxX-minX)/resX; maxY+=2.*(maxY-minY)/resY; maxZ+=2.*(maxZ-minZ)/resZ;
+
+    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
+
+    m.Normalize();
+    m.ComputeNormals();
+    m.ColorFromNormals();
+
+    unsigned int nbCollapsedEdges = m.postProcess(epsilon);
+    printf("---> Edge collapsing : %i edges collapsed with ratio < %lf (max collapsed edges: %i)\n", nbCollapsedEdges, epsilon, m.NbFaces());
+
+    m.Normalize();
+    m.ComputeNormals();
+    m.ColorFromNormals();
 
     Object o;
     o.GenBuffers();
     o.SetMesh(&m);
     o.SetShader(programID);
     //----------------------------------FIN CHANGER ICI---------------------------------------------
-
 
     GLuint PmatrixID = glGetUniformLocation(programID, "ProjectionMatrix");
     GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");

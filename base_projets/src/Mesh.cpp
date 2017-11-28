@@ -299,14 +299,14 @@ unsigned int Mesh::postProcess(const double epsilon) {
 
          // indices points à "unifier" :
          if (indexEdge % 3 == 0) {
-             ip1 = m_indices[indexEdge];
-             ip2 = m_indices[indexEdge+1];
+             ip1 = m_indices[indexEdge/3];
+             ip2 = m_indices[indexEdge/3+1];
          } else if (indexEdge % 3 == 1) {
-             ip1 = m_indices[indexEdge];
-             ip2 = m_indices[indexEdge+1];
+             ip1 = m_indices[(indexEdge-1)/3+1];
+             ip2 = m_indices[(indexEdge-1)/3+2];
          } else {
-             ip1 = m_indices[indexEdge];
-             ip2 = m_indices[indexEdge-2];
+             ip1 = m_indices[(indexEdge-2)/3+2];
+             ip2 = m_indices[(indexEdge-2)/3];
          }
 
 
