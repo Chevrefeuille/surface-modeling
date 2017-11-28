@@ -116,25 +116,33 @@ int main() {
     //std::cout << "Sphere function: " << fs.Eval(test) << ", our function: " << f.Eval(test) << std::endl;
 
     /** Mesh creation from data set and iso function **/
-    // double minX = ds.minX(); double minY = ds.minY(); double minZ = ds.minZ();
-    // double maxX = ds.maxX(); double maxY = ds.maxY(); double maxZ = ds.maxZ();
-    // const unsigned int resX = 10;
-    // const unsigned int resY = 10;
-    // const unsigned int resZ = 10;
+    //double minX = ds.minX(); double minY = ds.minY(); double minZ = ds.minZ();
+    //double maxX = ds.maxX(); double maxY = ds.maxY(); double maxZ = ds.maxZ();
+    // double minX = -1.; double minY = -1.; double minZ = -1.;
+    // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
+    // const unsigned int resX=50;
+    // const unsigned int resY=50;
+    // const unsigned int resZ=50;
+    // const double epsilon = 1E-6;
     // minX-=2.*(maxX-minX)/resX; minY-=2.*(maxY-minY)/resY; minZ-=2.*(maxZ-minZ)/resZ;
     // maxX+=2.*(maxX-minX)/resX; maxY+=2.*(maxY-minY)/resY; maxZ+=2.*(maxZ-minZ)/resZ;
-
-    //Mesh m(fs, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-    //printf("Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
+    //
+    // Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    // printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
+    //
+    // m.Normalize();
+    // m.ComputeNormals();
+    // m.ColorFromNormals();
+    //
+    // unsigned int nbCollapsedEdges = m.postProcess(epsilon);
+    // printf("---> Edge collapsing : %i edges collapsed with ratio < %lf (max collapsed edges: %i)\n", nbCollapsedEdges, epsilon, m.NbFaces());
 
     m.Normalize();
     m.ComputeNormals();
     m.ColorFromNormals();
 
-    //MeshHE m_he(m);
     Object o;
     o.GenBuffers();
-    //o.SetMesh(&m_he);
     o.SetMesh(&m);
     o.SetShader(programID);
     //----------------------------------FIN CHANGER ICI---------------------------------------------

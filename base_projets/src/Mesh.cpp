@@ -237,22 +237,15 @@ void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned
     }
 }
 
-Mesh Mesh::postProcess(const double epsilon) {
-    // Supprime les points en double et refait la correspondance avec les indices
-    //this->RemoveDouble();
-    //MeshHE m_he(*this);
-    //return m_he;
-
-    unsigned int n = m_indices.size()/3;
-
+unsigned int Mesh::postProcess(const double epsilon) {
+    unsigned int n = NbFaces();
+    unsigned int nbCollapsedEdges = 0;
     double inscribedCercleRadius;
-    double edgeAspectRatio[3*n];
+    vector<double> edgeAspectRatio; edgeAspectRatio.resize(3*n);
     unsigned int orderedIndexEdgeAspectRatio[n];
-    double* orderedEdgeAspectRatio2 = new double[n];
     vec3 p1, p2, p3;
 
-/*
-    for (int i = 0; i < 3*n; i++) {
+    for (int i = 0; i < n; i++) {
         // 0 : p2 - p1
         // 1 : p3 - p2
         // 2 : p3 - p1
@@ -268,31 +261,30 @@ Mesh Mesh::postProcess(const double epsilon) {
     // Indicage edgeAspectRatio par ordre croissant
     unsigned int minIndex = 0; double minRatio = edgeAspectRatio[0];
     for (unsigned int i = 0; i < n; i++) {
-        for (unsigned int j = 1; j < 3*n; j++) {
+        for (unsigned int j = 0; j < 3*n; j++) {
             if (edgeAspectRatio[j] < minRatio) {
                 minRatio = edgeAspectRatio[j];
                 minIndex = j;
             }
         }
+
+        //printf("deleting ratio : %lf, %i sur %i\n", minRatio, i, n);
+
+        if (minRatio > epsilon) {
+            nbCollapsedEdges = i;
+            break;
+        }
+
         orderedIndexEdgeAspectRatio[i] = minIndex;
-        orderedEdgeAspectRatio[i] = minRatio;
         edgeAspectRatio[minIndex] = 1;
         minIndex = 0; minRatio = edgeAspectRatio[0];
     }
 
-    for (int i = 0; i<n; i++)
-        printf("ratio = %lf\n", orderedEdgeAspectRatio[i]);
-
      //Elimination des arretes aux plus petit ratio
-     double ratio;
      unsigned int indexEdge, ip1, ip2;
      unsigned int N;
-     for (int i = 0; i < n; i++) {
+     for (unsigned int i = 0; i < nbCollapsedEdges; i++) {
          indexEdge = orderedIndexEdgeAspectRatio[i];
-         ratio = orderedEdgeAspectRatio[i];
-         if (ratio >= epsilon) {break;}
-
-         printf("Collapsing edge of ratio %lf", ratio);
 
          // indices points à "unifier" :
          if (indexEdge % 3 == 0) {
@@ -314,8 +306,8 @@ Mesh Mesh::postProcess(const double epsilon) {
          // On fait pointer les anciens sommets ip1 et ip2 vers N
          this->collapseEdge(ip1, ip2, N);
      }
-*/
-	 return *this;
+
+	 return nbCollapsedEdges;
 }
 
 
