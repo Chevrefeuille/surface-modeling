@@ -47,30 +47,18 @@ mat4 projection_matrix = perspective(view_angle, WIDTH / HEIGHT, 0.1f, 1000.0f);
 
 void view_control(mat4& view_matrix, float dx);
 
-int main()
-{
+int main() {
 
     cout << "Starting program..." << endl;
-
-    //==================================================
-    //============= Creation de la fenetre =============
-    //==================================================
-
-    // GLFW initialization
     if( !glfwInit() )
     {
         cerr << "Failed to initialize GLFW!" << endl;
         exit(EXIT_FAILURE);
     }
-
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4); // Anti Aliasing
     glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3); // OpenGL 3.1
     glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
-
-    // Window and OpenGL conetxt creation
-    if( !glfwOpenWindow(WIDTH, HEIGHT, 0,0,0,0, 32,0, GLFW_WINDOW ) )
-//    if( !glfwOpenWindow(WIDTH, HEIGHT, 0,0,0,0, 32,0, GLFW_FULLSCREEN ) )
-    {
+    if( !glfwOpenWindow(WIDTH, HEIGHT, 0,0,0,0, 32,0, GLFW_WINDOW ) )  {
         cerr << "GLFW failed to open OpenGL window!" << endl;
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -86,56 +74,28 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-
-
     // Soft- and Firm-ware checkings
     const GLubyte* renderer = glGetString (GL_RENDERER);
-    cout << "GPU : " << renderer << endl;
-
     const GLubyte* version = glGetString (GL_VERSION);
-    cout << "OpenGL Driver : " << version << endl;
-
-
-    cout << endl;
-
-
-    //==================================================
-    //================= Initialization =================
-    //==================================================
-
-    cout << "Initializing..." << endl;
 
     glfwSetMouseButtonCallback(mouse_button_callback);
     glfwSetMousePosCallback(cursor_position_callback);
     glfwSetMouseWheelCallback(mouse_wheel_callback);
 
-
-
-    //-------------------------------------------------
     // OpenGL Initialization
+<<<<<<< HEAD
 
     //glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
     glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
+=======
+    glClearColor(0.1, 0.1, 0.1, 1.0);
+>>>>>>> fb659b0bf662a4d3e13c5611c5b2612edc012d26
     glEnable(GL_DEPTH_TEST);
 
-
-
-    //-------------------------------------------------
     // Shader program initialization
-
     GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
-    cout << "programID = " << programID << endl;
 
 
-    //-------------------------------------------------
-    // Data arrays Initialization
-
-    // Mesh creation
-    //Mesh m("../models/Horse.off");
-
-    //BarthFunction bf;
-    //float x = 1.8;
-    //Mesh m; m.CreateIsoSurface(m, bf, -0.2, -x, x, -x, x, -x ,x, 100, 100, 100);
 
     DataSet ds("../data/bear.data");
 
@@ -171,90 +131,36 @@ int main()
     m.ComputeNormals();
     m.ColorFromNormals();
 
-    // Half edge conversion
-    MeshHE m_he(m);
-
-    // Object Generation
+    //MeshHE m_he(m);
     Object o;
     o.GenBuffers();
-    o.SetMesh(&m_he);
-//    o.SetMesh(&m);
+    //o.SetMesh(&m_he);
+    o.SetMesh(&m);
     o.SetShader(programID);
+    //----------------------------------FIN CHANGER ICI---------------------------------------------
 
-
-    //-------------------------------------------------
-    // MVP matrices initialization
 
     GLuint PmatrixID = glGetUniformLocation(programID, "ProjectionMatrix");
-    cout << "PmatrixID = " << PmatrixID << endl;
-
     GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");
-    cout << "VmatrixID = " << VmatrixID << endl;
-
-
-
-    cout << "Initializing done." << endl;
-    cout << endl;
-
-
-
-    //==================================================
-    //==================== Main Loop ===================
-    //==================================================
-
-
-    cout << "Starting main loop..." << endl;
-
     double init_time = glfwGetTime();
     double prec_time = init_time;
     double cur_time = init_time;
     double speed = 2.0;
-
     do{
-        // Clearing Viewport
         glClear( GL_COLOR_BUFFER_BIT );
         glClear( GL_DEPTH_BUFFER_BIT );
-
-
-        //==================================================
-        //================== Computations ==================
-        //==================================================
-
         prec_time = cur_time;
         cur_time = glfwGetTime() - init_time;
         float delta_time = cur_time - prec_time;
-
         view_control(view_matrix, speed * delta_time);
-
-
-        //==================================================
-        //===================== Drawing ====================
-        //==================================================
-
         o.Draw(view_matrix, projection_matrix, VmatrixID, PmatrixID);
-
         glfwSwapBuffers();
-
-
-        //==================================================
-        //================== Stats Display =================
-        //==================================================
-
-//        cout.precision(2);
-//        cout<< fixed  << "FPS: " << 1.0 / delta_time << "\t---\tElapsed time: " << setw(8) << cur_time << "\ts\r" << flush;
     }
     while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
            glfwGetWindowParam( GLFW_OPENED )        );
-
-    // Closing the window
     glfwTerminate();
 
-    cout << endl << endl << "Main loop ended." << endl;
-
-
     cout << "Program ended." << endl;
-
-
     return EXIT_SUCCESS;
 }
 
