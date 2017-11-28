@@ -131,26 +131,26 @@ int main()
     // Data arrays Initialization
 
     // Mesh creation
-    Mesh m("../models/Horse.off");
+    //Mesh m("../models/Horse.off");
 
     //BarthFunction bf;
     //float x = 1.8;
     //Mesh m; m.CreateIsoSurface(m, bf, -0.2, -x, x, -x, x, -x ,x, 100, 100, 100);
 
-    // DataSet ds("../data/cylindre.data");
+    DataSet ds("../data/sphere.data");
     //
-    // ds.ComputeTangentPlanes();
-    // ds.ComputeEMST();
-    // ds.AddKNeighborsEdges();
-    // ds.AssignCostOnEdges();
-    // ds.AssignTangentPlanesOrientation();
-    //
-    // DistanceFunction f(ds);
-    //
-    // Mesh m; m.CreateIsoSurface(m, f, 0, ds.minX(), ds.maxX(), ds.minY(), ds.maxY(), ds.minZ() ,ds.maxZ(), 10, 10, 10);
+    ds.ComputeTangentPlanes();
+    ds.ComputeEMST();
+    ds.AddKNeighborsEdges();
+    ds.AssignCostOnEdges();
+    ds.AssignTangentPlanesOrientation();
 
-    //m.Normalize();
-    //m.ComputeNormals();
+    DistanceFunction f(ds);
+
+    Mesh m; m.CreateIsoSurface(m, f, 0, ds.minX(), ds.maxX(), ds.minY(), ds.maxY(), ds.minZ() ,ds.maxZ(), 20, 20, 20);
+
+    m.Normalize();
+    m.ComputeNormals();
     m.ColorFromNormals();
 
     // Half edge conversion
