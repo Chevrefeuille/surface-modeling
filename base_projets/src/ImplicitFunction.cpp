@@ -577,9 +577,14 @@ glm::vec3 BarthFunction::EvalDev(glm::vec3 p) const
 }
 
 
-DistanceFunction::DistanceFunction(DataSet DS):
-    m_DS(DS)
+DistanceFunction::DistanceFunction(const char* filename) :
+    m_DS(filename)
 {
+    m_DS.ComputeTangentPlanes();
+    m_DS.ComputeEMST();
+    m_DS.AddKNeighborsEdges();
+    //m_DS.AssignCostOnEdges();
+    //m_DS.AssignTangentPlanesOrientation();
 }
 
 DistanceFunction::~DistanceFunction()
@@ -589,7 +594,6 @@ DistanceFunction::~DistanceFunction()
 
 float DistanceFunction::Eval(glm::vec3 p) const
 {
-
     Plane min_plane = m_DS.getGraph()->work->begin()->second->plane;
     double min_distance = glm::distance(p, min_plane.getCenter());
     //std::cout << p.x << ", " << p.y << ", " << p.z <<  std::endl;

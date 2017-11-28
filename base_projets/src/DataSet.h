@@ -15,7 +15,7 @@ public:
     // Constructors
     DataSet(){}                        /// Empty constructor
     DataSet(const char* filename);     /// Imports a dataset from a data file
-    ~DataSet();            
+    ~DataSet();
 
     Plane ComputeTangentPlanes();
     void ComputeEMST();

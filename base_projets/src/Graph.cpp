@@ -4,8 +4,8 @@
 #include <fstream>
 
 Graph::Graph() {
-  work = new vertices_map();
-  maxZCenter = NULL;
+    work = new vertices_map();
+    maxZCenter = NULL;
 }
 
 Graph::~Graph() {

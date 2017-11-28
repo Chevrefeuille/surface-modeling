@@ -232,11 +232,18 @@ private:
 class DistanceFunction : public ImplicitFunction
 {
 public:
-    DistanceFunction(DataSet DS);
+    DistanceFunction(const char* filename);
     ~DistanceFunction();
 
     virtual float Eval(glm::vec3 p) const;
     virtual glm::vec3 EvalDev(glm::vec3 p) const;
+
+    double minX() const {return m_DS.minX();};
+    double minY() const {return m_DS.maxX();};
+    double minZ() const {return m_DS.minY();};
+    double maxX() const {return m_DS.maxY();};
+    double maxY() const {return m_DS.minZ();};
+    double maxZ() const {return m_DS.maxZ();};
 
 private:
 
