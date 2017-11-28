@@ -83,13 +83,10 @@ int main() {
     glfwSetMouseWheelCallback(mouse_wheel_callback);
 
     // OpenGL Initialization
-<<<<<<< HEAD
 
     //glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
     glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
-=======
-    glClearColor(0.1, 0.1, 0.1, 1.0);
->>>>>>> fb659b0bf662a4d3e13c5611c5b2612edc012d26
+
     glEnable(GL_DEPTH_TEST);
 
     // Shader program initialization
@@ -97,15 +94,15 @@ int main() {
 
 
 
-    DataSet ds("../data/bear.data");
+    DataSet ds("../data/sphere.data");
 
     ds.ComputeTangentPlanes();
     ds.ComputeEMST();
-    ds.AddKNeighborsEdges();
-    // ds.AssignCostOnEdges();
-    // ds.AssignTangentPlanesOrientation();
+    //ds.AddKNeighborsEdges();
+    //ds.AssignCostOnEdges();
+    //ds.AssignTangentPlanesOrientation();
 
-    //DistanceFunction f(ds);
+    DistanceFunction f(ds);
     glm::vec3 c(0, 0, 0);
     SphereFunction fs(c, 1);
 
