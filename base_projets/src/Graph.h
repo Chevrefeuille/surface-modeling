@@ -33,8 +33,9 @@ struct VertexG {
     Plane plane;
     double cost; //used by Prim's algorithm
     bool isInMST; //used by Prim's algorithm
+    VertexG* prev; //used by Prim's algorithm
     bool isMarked; //used by DFS algorithm
-    VertexG(Plane p, double _cost, bool _isInMST, bool _isMarked) : plane(p), cost(_cost), isInMST(_isInMST), isMarked(_isMarked) {}
+    VertexG(Plane p, double _cost, bool _isInMST, VertexG* _prev, bool _isMarked) : plane(p), cost(_cost), isInMST(_isInMST), prev(_prev), isMarked(_isMarked) {}
 };
 
 struct GreaterThanByCost {

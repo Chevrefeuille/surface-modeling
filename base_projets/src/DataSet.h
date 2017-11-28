@@ -21,6 +21,8 @@ public:
     void AssignCostOnEdges();
     void AssignTangentPlanesOrientation();
 
+    std::vector<Plane> getTangentPlanes() const {return m_tangentPlanes;};
+
     int nbPoints() const {return m_N;}
     double minX() const {return min_X;};
     double minY() const {return min_Y;};

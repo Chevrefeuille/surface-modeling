@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include "DataSet.h"
+
 class ImplicitFunction
 {
 public:
@@ -227,19 +229,20 @@ private:
 };
 
 
-class DistanceFunction : public  ImplicitFunction
+class DistanceFunction : public ImplicitFunction
 {
 public:
-
-    DistanceFunction();
+    DistanceFunction(DataSet DS);
     ~DistanceFunction();
 
     virtual float Eval(glm::vec3 p) const;
     virtual glm::vec3 EvalDev(glm::vec3 p) const;
 
-
 private:
+
+    DataSet m_DS;
 };
+
 
 
 
