@@ -96,8 +96,6 @@ int main() {
     glm::vec3 c(0, 0, 0);
     SphereFunction fs(c, 1);
 
-    //std::cout << ds.minX() << std::endl;
-
     Mesh m; m.CreateIsoSurface(m, f, 0, f.minX(), f.maxX(), f.minY(), f.maxY(), f.minZ(), f.maxZ(), 10, 10, 10);
     //glm::vec3 test(0, 0, 1);
     //std::cout << "Sphere function: " << fs.Eval(test) << ", our function: " << f.Eval(test) << std::endl;
@@ -114,15 +112,17 @@ int main() {
     // minX-=2.*(maxX-minX)/resX; minY-=2.*(maxY-minY)/resY; minZ-=2.*(maxZ-minZ)/resZ;
     // maxX+=2.*(maxX-minX)/resX; maxY+=2.*(maxY-minY)/resY; maxZ+=2.*(maxZ-minZ)/resZ;
     //
-    //Mesh m(f, f.minX(), f.maxX(), f.minY(), f.maxY(), f.minZ(), f.maxZ(), 10, 10, 10);
-    //printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
+    // Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
+    // printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
     //
-
+    // m.Normalize();
+    // m.ComputeNormals();
+    // m.ColorFromNormals();
     //
     // unsigned int nbCollapsedEdges = m.postProcess(epsilon);
     // printf("---> Edge collapsing : %i edges collapsed with ratio < %lf (max collapsed edges: %i)\n", nbCollapsedEdges, epsilon, m.NbFaces());
-
-    m.Normalize();
+    //
+    // m.Normalize();
     m.ComputeNormals();
     m.ColorFromNormals();
 
@@ -131,7 +131,6 @@ int main() {
     o.SetMesh(&m);
     o.SetShader(programID);
     //----------------------------------FIN CHANGER ICI---------------------------------------------
-
 
     GLuint PmatrixID = glGetUniformLocation(programID, "ProjectionMatrix");
     GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");

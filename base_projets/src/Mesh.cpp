@@ -1,12 +1,11 @@
 #include <cstdlib>
 #include <iostream>
 #include <math.h>
-#include "omp.h"
 #include "MeshHE.h"
 
 #include <Mesh.h>
 #include <ImplicitFunction.h>
-#include <DataSet.h>
+#include <glm/gtx/vector_angle.hpp>
 
 using namespace glm;
 using namespace std;
@@ -202,11 +201,15 @@ Mesh::Mesh(const ImplicitFunction& function, double minX, double maxX, double mi
 	}
 }
 
-double inscribedCercleRadiusOfTriangle(const vec3& p1, const vec3& p2, const vec3& p3) {
+double AspectRatio(const vec3 &p1, const vec3 &p2, const vec3 &p3) {
     double areaTriangle = length(cross(p2-p1, p3-p1))/2;
     double halfPerimeter = length(p2-p1) + length(p3-p2) + length(p3-p1);
     halfPerimeter/=2;
-    return areaTriangle/halfPerimeter;
+    double rayonCercleInscrit = areaTriangle/halfPerimeter;
+
+    double rayonCercleCirconscrit = length(p2-p1) / (2 * sin(angle(p1, p2)));
+
+    return 2 * rayonCercleInscrit / rayonCercleCirconscrit;
 }
 
 /**
@@ -214,23 +217,26 @@ double inscribedCercleRadiusOfTriangle(const vec3& p1, const vec3& p2, const vec
  * On fait pointer les anciens index sur le nouvel index
  */
 void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex) {
-    unsigned int n = m_indices.size() / 3;
+    unsigned int n = NbFaces();
     for (int i = 0; i < n; i++) {
         // Si le triangle contient les 2 sommets à unifier:
         if (m_indices[i] == oldIndex1 || m_indices[i+1] == oldIndex1 || m_indices[i+2] == oldIndex1) {
             if (m_indices[i] == oldIndex2 || m_indices[i+1] == oldIndex2 || m_indices[i+2] == oldIndex2) {
-                m_indices.erase(m_indices.begin()+i, m_indices.begin()+i+3);
-                n-=3;
+                //m_indices.erase(m_indices.begin()+i, m_indices.begin()+i+3);
+                //n-=3;
+                1;
             }
         } else {
             if (m_indices[i] == oldIndex1 || m_indices[i] == oldIndex2) {
                 m_indices[i] = newIndex;
             }
             if (m_indices[i + 1] == oldIndex1 || m_indices[i + 1] == oldIndex2) {
-                m_indices[i + 1] = newIndex;
+                //m_indices[i + 1] = newIndex;
+                1;
             }
             if (m_indices[i + 2] == oldIndex1 || m_indices[i + 2] == oldIndex2) {
-                m_indices[i + 2] = newIndex;
+                //m_indices[i + 2] = newIndex;
+                1;
             }
         }
 
@@ -240,22 +246,27 @@ void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned
 unsigned int Mesh::postProcess(const double epsilon) {
     unsigned int n = NbFaces();
     unsigned int nbCollapsedEdges = 0;
-    double inscribedCercleRadius;
+    double ratio;
     vector<double> edgeAspectRatio; edgeAspectRatio.resize(3*n);
     unsigned int orderedIndexEdgeAspectRatio[n];
     vec3 p1, p2, p3;
 
     for (int i = 0; i < n; i++) {
-        // 0 : p2 - p1
-        // 1 : p3 - p2
-        // 2 : p3 - p1
         p1 = m_positions[m_indices[3*i+0]];
         p2 = m_positions[m_indices[3*i+1]];
         p3 = m_positions[m_indices[3*i+2]];
-        inscribedCercleRadius = inscribedCercleRadiusOfTriangle(p1, p2, p3);;
-        edgeAspectRatio[3*i+0] = inscribedCercleRadius * length(p2-p1);
-        edgeAspectRatio[3*i+1] = inscribedCercleRadius * length(p3-p2);
-        edgeAspectRatio[3*i+2] = inscribedCercleRadius * length(p3-p1);
+        ratio = AspectRatio(p1, p2, p3);;
+        edgeAspectRatio[3*i+0] = ratio * length(p2-p1);
+        edgeAspectRatio[3*i+1] = ratio * length(p3-p2);
+        edgeAspectRatio[3*i+2] = ratio * length(p3-p1);
+
+        if (m_indices[3*i+0] == 11128) {
+            printf("Edge 11128 d'indices %i et %i\n", m_indices[3*i+0], m_indices[3*i+1]);
+        } else if (m_indices[3*i+1] == 11128) {
+            printf("Edge 11128 d'indices %i et %i\n", m_indices[3 * i + 1], m_indices[3 * i + 2]);
+        } else if (m_indices[3*i+2] == 11128) {
+            printf("Edge 11128 d'indices %i et %i\n", m_indices[3 * i + 2], m_indices[3 * i + 0]);
+        }
     }
 
     // Indicage edgeAspectRatio par ordre croissant
@@ -288,20 +299,23 @@ unsigned int Mesh::postProcess(const double epsilon) {
 
          // indices points à "unifier" :
          if (indexEdge % 3 == 0) {
-             ip1 = m_indices[indexEdge];
-             ip2 = m_indices[indexEdge+1];
+             ip1 = m_indices[indexEdge/3];
+             ip2 = m_indices[indexEdge/3+1];
          } else if (indexEdge % 3 == 1) {
-             ip1 = m_indices[indexEdge];
-             ip2 = m_indices[indexEdge+1];
+             ip1 = m_indices[(indexEdge-1)/3+1];
+             ip2 = m_indices[(indexEdge-1)/3+2];
          } else {
-             ip1 = m_indices[indexEdge];
-             ip2 = m_indices[indexEdge-2];
+             ip1 = m_indices[(indexEdge-2)/3+2];
+             ip2 = m_indices[(indexEdge-2)/3];
          }
+
+
+         if (indexEdge == 11128)
+             printf("Edge %i, d'indices %i, %i\n", indexEdge, ip1, ip2);
 
          // Nouveau point = milieu des 2 anciens points
          p3 = (m_positions[ip1] + m_positions[ip2]) / (float)2;
          N = m_positions.size(); // indice du nouveau point p3
-         m_indices.push_back(N);
          m_positions.push_back(p3);
          // On fait pointer les anciens sommets ip1 et ip2 vers N
          this->collapseEdge(ip1, ip2, N);
