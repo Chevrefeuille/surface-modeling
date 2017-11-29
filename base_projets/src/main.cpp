@@ -92,9 +92,11 @@ int main() {
     // Shader program initialization
     GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
-    DistanceFunction f("../data/sphere.data");
+
+
+    //DistanceFunction f("../data/sphere.data");
     glm::vec3 c(0, 0, 0);
-    SphereFunction fs(c, 1);
+    SphereFunction f(c, 1);
 
     //Mesh m("../models/chat.off");
 
