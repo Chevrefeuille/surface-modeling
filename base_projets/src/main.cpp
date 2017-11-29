@@ -92,13 +92,13 @@ int main() {
     // Shader program initialization
     GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
-    DistanceFunction f("../data/bear.data");
+    DistanceFunction f("../data/sphere.data");
     glm::vec3 c(0, 0, 0);
     SphereFunction fs(c, 1);
 
     //std::cout << ds.minX() << std::endl;
 
-    Mesh m; m.CreateIsoSurface(m, fs, 0, f.minX(), f.maxX(), f.minY(), f.maxY(), f.minZ(), f.maxZ(), 10, 10, 10);
+    Mesh m; m.CreateIsoSurface(m, f, 0, f.minX(), f.maxX(), f.minY(), f.maxY(), f.minZ(), f.maxZ(), 10, 10, 10);
     //glm::vec3 test(0, 0, 1);
     //std::cout << "Sphere function: " << fs.Eval(test) << ", our function: " << f.Eval(test) << std::endl;
 
