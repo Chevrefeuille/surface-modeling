@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include "MeshHE.h"
+#include "omp.h"
 
 #include <Mesh.h>
 #include <ImplicitFunction.h>
@@ -209,41 +210,37 @@ double AspectRatio(const vec3 &p1, const vec3 &p2, const vec3 &p3) {
 
     double rayonCercleCirconscrit = length(p2-p1) / (2 * sin(angle(p1, p2)));
 
-    return 2 * rayonCercleInscrit / rayonCercleCirconscrit;
+    return (2 * rayonCercleInscrit / rayonCercleCirconscrit);
 }
 
 /**
  * Edge collapsing
  * On fait pointer les anciens index sur le nouvel index
  */
-void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex) {
+void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex, vector<int>& faceToDelete) {
     unsigned int n = NbFaces();
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
         // Si le triangle contient les 2 sommets à unifier:
-        if (m_indices[i] == oldIndex1 || m_indices[i+1] == oldIndex1 || m_indices[i+2] == oldIndex1) {
-            if (m_indices[i] == oldIndex2 || m_indices[i+1] == oldIndex2 || m_indices[i+2] == oldIndex2) {
-                //m_indices.erase(m_indices.begin()+i, m_indices.begin()+i+3);
-                //n-=3;
-                1;
-            }
+        if ((m_indices[3*i] == oldIndex1 || m_indices[3*i+1] == oldIndex1 || m_indices[3*i+2] == oldIndex1) &&
+                (m_indices[3*i] == oldIndex2 || m_indices[3*i+1] == oldIndex2 || m_indices[3*i+2] == oldIndex2)) {
+            faceToDelete.push_back(i);
         } else {
-            if (m_indices[i] == oldIndex1 || m_indices[i] == oldIndex2) {
-                m_indices[i] = newIndex;
+            if (m_indices[3*i] == oldIndex1 || m_indices[3*i] == oldIndex2) {
+                m_indices[3*i] = newIndex;
             }
-            if (m_indices[i + 1] == oldIndex1 || m_indices[i + 1] == oldIndex2) {
-                //m_indices[i + 1] = newIndex;
-                1;
+            if (m_indices[3*i + 1] == oldIndex1 || m_indices[3*i + 1] == oldIndex2) {
+                m_indices[3*i + 1] = newIndex;
             }
-            if (m_indices[i + 2] == oldIndex1 || m_indices[i + 2] == oldIndex2) {
-                //m_indices[i + 2] = newIndex;
-                1;
+            if (m_indices[3*i + 2] == oldIndex1 || m_indices[3*i + 2] == oldIndex2) {
+                m_indices[3*i + 2] = newIndex;
             }
         }
-
     }
 }
 
 unsigned int Mesh::postProcess(const double epsilon) {
+    //this->RemoveDouble();
+
     unsigned int n = NbFaces();
     unsigned int nbCollapsedEdges = 0;
     double ratio;
@@ -259,14 +256,6 @@ unsigned int Mesh::postProcess(const double epsilon) {
         edgeAspectRatio[3*i+0] = ratio * length(p2-p1);
         edgeAspectRatio[3*i+1] = ratio * length(p3-p2);
         edgeAspectRatio[3*i+2] = ratio * length(p3-p1);
-
-        if (m_indices[3*i+0] == 11128) {
-            printf("Edge 11128 d'indices %i et %i\n", m_indices[3*i+0], m_indices[3*i+1]);
-        } else if (m_indices[3*i+1] == 11128) {
-            printf("Edge 11128 d'indices %i et %i\n", m_indices[3 * i + 1], m_indices[3 * i + 2]);
-        } else if (m_indices[3*i+2] == 11128) {
-            printf("Edge 11128 d'indices %i et %i\n", m_indices[3 * i + 2], m_indices[3 * i + 0]);
-        }
     }
 
     // Indicage edgeAspectRatio par ordre croissant
@@ -278,8 +267,6 @@ unsigned int Mesh::postProcess(const double epsilon) {
                 minIndex = j;
             }
         }
-
-        //printf("deleting ratio : %lf, %i sur %i\n", minRatio, i, n);
 
         if (minRatio > epsilon) {
             nbCollapsedEdges = i;
@@ -293,35 +280,47 @@ unsigned int Mesh::postProcess(const double epsilon) {
 
      //Elimination des arretes aux plus petit ratio
      unsigned int indexEdge, ip1, ip2;
-     unsigned int N;
+    vector<int> faceToDelete;
      for (unsigned int i = 0; i < nbCollapsedEdges; i++) {
          indexEdge = orderedIndexEdgeAspectRatio[i];
 
          // indices points à "unifier" :
          if (indexEdge % 3 == 0) {
-             ip1 = m_indices[indexEdge/3];
-             ip2 = m_indices[indexEdge/3+1];
+             ip1 = m_indices[indexEdge];
+             ip2 = m_indices[indexEdge+1];
          } else if (indexEdge % 3 == 1) {
-             ip1 = m_indices[(indexEdge-1)/3+1];
-             ip2 = m_indices[(indexEdge-1)/3+2];
+             ip1 = m_indices[indexEdge];
+             ip2 = m_indices[indexEdge+1];
          } else {
-             ip1 = m_indices[(indexEdge-2)/3+2];
-             ip2 = m_indices[(indexEdge-2)/3];
+             ip1 = m_indices[indexEdge];
+             ip2 = m_indices[indexEdge-2];
          }
 
 
-         if (indexEdge == 11128)
-             printf("Edge %i, d'indices %i, %i\n", indexEdge, ip1, ip2);
-
          // Nouveau point = milieu des 2 anciens points
-         p3 = (m_positions[ip1] + m_positions[ip2]) / (float)2;
-         N = m_positions.size(); // indice du nouveau point p3
-         m_positions.push_back(p3);
-         // On fait pointer les anciens sommets ip1 et ip2 vers N
-         this->collapseEdge(ip1, ip2, N);
+         //p3 = (m_positions[ip1] + m_positions[ip2]) / (float)2;
+         //unsigned int N;
+         //N = m_positions.size(); // indice du nouveau point p3
+         //m_positions.push_back(p3);
+
+         this->collapseEdge(ip1, ip2, ip1, faceToDelete);
      }
 
-	 return nbCollapsedEdges;
+    /* MArche pas encore
+    // Supression des faces en trop
+    uint Max = m_indices.size() + 1;
+    for (vector<int>::iterator it = faceToDelete.begin(); it!=faceToDelete.end(); it++) {
+        m_indices[3 * *it] = Max;
+    }
+    for (unsigned int i = 0; i < n; i++) {
+        if (m_indices[3 * i] == Max) {
+            m_indices.erase(m_indices.begin() + 3 * i, m_indices.begin() + 3 * i + 3);
+            i--; n--;
+        }
+    }
+     */
+
+    return nbCollapsedEdges;
 }
 
 

@@ -47,7 +47,7 @@ public:
     		double minZ, double maxZ, const unsigned int resX = 100, const unsigned int resY=100,
     		const unsigned int resZ=100); /// imports a mesh from an isofunction, coord limits and resolution
     void ProcessTetrahedron2(const ImplicitFunction& function, const glm::vec3 p[]);
-    void collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex);
+    void collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex, std::vector<int>& faceToDelete);
     unsigned int postProcess(const double epsilon); // Collapse Edges using an aspect ratio criterion
 };
 
