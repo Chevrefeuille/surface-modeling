@@ -583,8 +583,8 @@ DistanceFunction::DistanceFunction(const char* filename) :
     m_DS.ComputeTangentPlanes();
     m_DS.ComputeEMST();
     m_DS.AddKNeighborsEdges();
-    //m_DS.AssignCostOnEdges();
-    //m_DS.AssignTangentPlanesOrientation();
+    m_DS.AssignCostOnEdges();
+    m_DS.AssignTangentPlanesOrientation();
 }
 
 DistanceFunction::~DistanceFunction()
