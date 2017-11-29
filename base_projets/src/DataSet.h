@@ -47,7 +47,7 @@ protected:
 
 
     std::vector<glm::vec3> ComputeNhbd(glm::vec3 x);
-    std::vector<Plane> ComputeKNeigbors(Plane p);
+    std::vector<Plane> ComputeKNeigbors(std::vector<Plane>& KNeighbors, Plane p);
     glm::vec3 ComputeCentroid(std::vector<glm::vec3>);
     glm::vec3 ComputeTangent(std::vector<glm::vec3>, glm::vec3 o);
 };

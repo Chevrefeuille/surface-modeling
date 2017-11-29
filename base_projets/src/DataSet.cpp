@@ -190,7 +190,7 @@ void DataSet::ComputeEMST() {
 
 }
 
-std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
+std::vector<Plane> DataSet::ComputeKNeigbors(std::vector<Plane>& KNeighbors, Plane p) {
 	std::vector<PLANE_AND_DISTANCE> planes_and_distances(m_N - 1);
 
 	// computing distances
@@ -212,22 +212,22 @@ std::vector<Plane> DataSet::ComputeKNeigbors(Plane p) {
 	}
     std::sort(planes_and_distances.begin(), planes_and_distances.end());
 	// extracting k nearest neighbors
-	std::vector<Plane> KNeigbors(m_K);
+	//std::vector<Plane> KNeigbors(m_K);
 	for (int i = 0; i < m_K ; i++) {
-		KNeigbors[i] = planes_and_distances[i].plane;
-		glm::vec3 x2 = KNeigbors[i].getCenter();
+		KNeighbors.push_back(planes_and_distances[i].plane);
+		//glm::vec3 x2 = KNeigbors[i].getCenter();
 		//std::cout << "*" << x2[0] << ", " << x2[1] << ", " << x2[2] << " ==> " << planes_and_distances[i].distance << std::endl;
 	}
-	return KNeigbors;
+	return KNeighbors;
 }
 
 void DataSet::AddKNeighborsEdges() {
-	std::vector<Plane> KNeighbors(m_K);
+	std::vector<Plane> KNeighbors;
 	for (int i = 0; i < m_N; i++) {
 		Plane pi = m_tangentPlanes[i];
 		glm::vec3 vi = pi.getCenter();
         //std::cout << "point " << vi.x << ", " << vi.y << ", " << vi.z << " neigbors :" << std::endl;
-		KNeighbors = ComputeKNeigbors(pi);
+		KNeighbors = ComputeKNeigbors(KNeighbors, pi);
 		for (int j = 0; j < m_K; j++) {
 			Plane pj = KNeighbors[j];
             glm::vec3 vj = pj.getCenter();

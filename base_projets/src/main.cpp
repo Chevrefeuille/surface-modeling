@@ -92,7 +92,7 @@ int main() {
     // Shader program initialization
     GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
-    DistanceFunction f("../data/sphere.data");
+    DistanceFunction f("../data/bear.data");
     glm::vec3 c(0, 0, 0);
     SphereFunction fs(c, 1);
 
@@ -122,7 +122,7 @@ int main() {
     // unsigned int nbCollapsedEdges = m.postProcess(epsilon);
     // printf("---> Edge collapsing : %i edges collapsed with ratio < %lf (max collapsed edges: %i)\n", nbCollapsedEdges, epsilon, m.NbFaces());
     //
-    // m.Normalize();
+    m.Normalize();
     m.ComputeNormals();
     m.ColorFromNormals();
 
