@@ -580,10 +580,15 @@ glm::vec3 BarthFunction::EvalDev(glm::vec3 p) const
 DistanceFunction::DistanceFunction(const char* filename) :
     m_DS(filename)
 {
+    std::cout << "Computing Tangent Planes" << std::endl;
     m_DS.ComputeTangentPlanes();
+    std::cout << "Computing EMST" << std::endl;
     m_DS.ComputeEMST();
+    std::cout << "Adding Neighbors Edges" << std::endl;
     m_DS.AddKNeighborsEdges();
+    std::cout << "Adding Costs on Edges" << std::endl;
     m_DS.AssignCostOnEdges();
+    std::cout << "Assigning Tangent Planes Orientation" << std::endl;
     m_DS.AssignTangentPlanesOrientation();
 }
 

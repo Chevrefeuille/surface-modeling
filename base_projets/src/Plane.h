@@ -15,6 +15,7 @@ public:
     glm::vec3 getNormal() const;
     glm::vec3 setNormal(const glm::vec3& normal);
     glm::vec3 getCenter() const;
+    std::string printPlane() const;
 
 protected:
     // Attributes

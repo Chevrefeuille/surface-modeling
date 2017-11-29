@@ -1,5 +1,7 @@
 #include <iostream>
 #include <math.h>
+#include <sstream>
+
 
 #include <Plane.h>
 
@@ -22,4 +24,12 @@ glm::vec3 Plane::setNormal(const glm::vec3& normal) {
 
 glm::vec3 Plane::getNormal() const {
     return m_normal;
+}
+
+std::string Plane::printPlane() const {
+    std::string s;
+    std::stringstream out;
+    out << "\nCenter: " << m_center.x << " " << m_center.y << " " << m_center.z << "\nNormal: " << m_normal.x << " " << m_normal.y << " " << m_normal.z;
+    s = out.str();
+    return s;
 }

@@ -46,8 +46,8 @@ protected:
     double min_X, min_Y, min_Z, max_X, max_Y, max_Z;
 
 
-    std::vector<glm::vec3> ComputeNhbd(glm::vec3 x);
-    std::vector<Plane> ComputeKNeigbors(std::vector<Plane>& KNeighbors, Plane p);
+    void ComputeNhbd(std::vector<glm::vec3>& Nhbd, glm::vec3 x);
+    void ComputeKNeigbors(std::vector<Plane>& KNeighbors, Plane p);
     glm::vec3 ComputeCentroid(std::vector<glm::vec3>);
     glm::vec3 ComputeTangent(std::vector<glm::vec3>, glm::vec3 o);
 };
