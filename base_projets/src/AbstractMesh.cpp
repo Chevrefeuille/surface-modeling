@@ -189,7 +189,7 @@ void AbstractMesh::ComputeNormals()
 
         if(l < 1e-5)
         {
-            cerr << "Error : normal of length 0." << endl;
+            cerr << "Error : normal of length 0. Normal of indice " << i << endl;
             continue;
         }
 
