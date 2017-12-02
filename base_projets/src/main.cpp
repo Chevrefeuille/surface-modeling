@@ -95,30 +95,30 @@ int main() {
 
 
     DistanceFunction f("../data/bear.data");
-    //glm::vec3 c(0, 0, 0);
-    //SphereFunction f(c, 1);
 
     //Mesh m("../test.off");
 
-    // //glm::vec3 test(0, 0, 1);
-    // //std::cout << "Sphere function: " << fs.Eval(test) << ", our function: " << f.Eval(test) << std::endl;
-    //
     /** Mesh creation from data set and iso function **/
     std::cout << "Evaluating Distance Function" << std::endl;
     double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
     double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
-    //
+   
     // // double minX = -1.; double minY = -1.; double minZ = -1.;
     // // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
 
     //const double epsilon = 1E-6;
-    // minX-=2.*(maxX-minX)/resX; minY-=2.*(maxY-minY)/resY; minZ-=2.*(maxZ-minZ)/resZ;
-    // maxX+=2.*(maxX-minX)/resX; maxY+=2.*(maxY-minY)/resY; maxZ+=2.*(maxZ-minZ)/resZ;
+    double resX = 20; double resY = 20; double resZ = 20;
+    minX -= (maxX - minX) / 2; 
+    minY -= (maxY - minY) / 2; 
+    minZ -= (maxZ - minZ) / 2;
+    maxX += (maxX - minX) / 2; 
+    maxY += (maxY - minY) / 2; 
+    maxZ += (maxZ - minZ) / 2;
     //
-    Mesh m; m.CreateIsoSurface(m, f, 0, minX, maxX, minY, maxY, minZ, maxZ, 20, 20, 20);
+    //Mesh m; m.CreateIsoSurface(m, f, 0, minX, maxX, minY, maxY, minZ, maxZ, 20, 20, 20);
     //
     // //
-    //Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, 10, 10, 10);
+    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
     //printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
 
     //
