@@ -61,15 +61,17 @@ void AbstractMesh::write_obj(const char* filename) const
         std::cout << "Unable to open : " << filename << std::endl;
     }
 
+    fprintf(file, "OFF\n%d %d 0\n", m_positions.size(), m_indices.size()/3);
+
     for(unsigned int i = 0; i < m_positions.size(); i++)
     {
         vec3 p = m_positions[i];
-        fprintf(file,"v %f %f %f\n", p[0], p[1], p[2]);
+        fprintf(file,"%f %f %f\n", p[0], p[1], p[2]);
     }
 
     for(unsigned int i = 0; i < m_indices.size(); i+=3)
-    {
-        fprintf(file,"f %i %i %i\n", m_indices[i]+1, m_indices[i+1]+1, m_indices[i+2]+1);
+    {   
+        fprintf(file, "3 %i %i %i\n", m_indices[i], m_indices[i+1], m_indices[i+2]);
     }
 }
 
