@@ -94,7 +94,7 @@ int main() {
 
 
 
-    DistanceFunction f("../data/bear.data");
+    DistanceFunction f("../data/screwdriver.data");
 
     //Mesh m("../test.off");
 
