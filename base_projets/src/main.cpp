@@ -93,43 +93,41 @@ int main() {
     // GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
 
-
-    DistanceFunction f("../data/screwdriver.data");
-
+    // //----------------------------------CHANGER ICI---------------------------------------------
+    //DistanceFunction f("../data/screwdriver.data");
     //Mesh m("../test.off");
 
     /** Mesh creation from data set and iso function **/
-    std::cout << "Evaluating Distance Function" << std::endl;
-    double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
-    double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
+    //std::cout << "Evaluating Distance Function" << std::endl;
+    //double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
+    //double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
    
-    // // double minX = -1.; double minY = -1.; double minZ = -1.;
-    // // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
 
-    //const double epsilon = 1E-6;
-    double resX = 20; double resY = 20; double resZ = 20;
-    minX -= (maxX - minX) / 2; 
-    minY -= (maxY - minY) / 2; 
-    minZ -= (maxZ - minZ) / 2;
-    maxX += (maxX - minX) / 2; 
-    maxY += (maxY - minY) / 2; 
-    maxZ += (maxZ - minZ) / 2;
-    //
-    //Mesh m; m.CreateIsoSurface(m, f, 0, minX, maxX, minY, maxY, minZ, maxZ, 20, 20, 20);
-    //
-    // //
+
+    SphereFunction f(glm::vec3(0,0,0), 1);
+    double minX = -1.; double minY = -1.; double minZ = -1.;
+    double maxX = 1.; double maxY = 1.; double maxZ = 1.;
+    const double epsilon = 1E-5;
+    const unsigned int resX = 20; const unsigned int resY = 20; const unsigned int resZ = 20;
+    minX -= (maxX - minX) / (2.*resX);
+    minY -= (maxY - minY) / (2.*resY);
+    minZ -= (maxZ - minZ) / (2.*resZ);
+    maxX += (maxX - minX) / (2.*resX);
+    maxY += (maxY - minY) / (2.*resY);
+    maxZ += (maxZ - minZ) / (2.*resZ);
+
     Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-    //printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
+    printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
 
-    //
-    // unsigned int nbCollapsedEdges = m.postProcess(epsilon);
-    // printf("---> Edge collapsing : %i edges collapsed with ratio < %lf (max collapsed edges: %i)\n", nbCollapsedEdges, epsilon, m.NbFaces());
-    //
     m.Normalize();
     m.ComputeNormals();
     m.ColorFromNormals();
 
-    m.write_obj("../test.off");
+    unsigned int* collapsingValues = m.postProcess(epsilon);
+    printf("---> Edge collapsing : %i edges and %i faces collapsed with ratio < %lf (max collapsed edges: %i)\n",
+           collapsingValues[0], collapsingValues[1], epsilon, m.NbFaces());
+
+    //m.write_obj("../test.off");
 
     // Object o;
     // o.GenBuffers();
