@@ -232,7 +232,7 @@ private:
 class DistanceFunction : public ImplicitFunction
 {
 public:
-    DistanceFunction(const char* filename);
+    DistanceFunction(const char* filename, int K, float rho);
     ~DistanceFunction();
 
     virtual float Eval(glm::vec3 p) const;

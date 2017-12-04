@@ -47,7 +47,19 @@ mat4 projection_matrix = perspective(view_angle, WIDTH / HEIGHT, 0.1f, 1000.0f);
 
 void view_control(mat4& view_matrix, float dx);
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if (argc <= 3)
+	{
+		if (argv[0])
+			std::cout << "Usage: " << argv[0] << " <file_path> <K> <rho>" << '\n';
+		else
+			std::cout << "Usage: <program name> <number>" << '\n';
+
+		exit(1);
+	}
+
+    // ---------------------------------------------------------------------------------
 
     cout << "Starting program..." << endl;
     if( !glfwInit() )
@@ -92,11 +104,11 @@ int main() {
     // Shader program initialization
     GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
+    //--------------------------------------------------------------------------------------------
 
+    DistanceFunction f(argv[1], std::atoi(argv[2]), std::atof(argv[3]));
 
-    DistanceFunction f("../data/bear.data");
-
-    SphereFunction fs(glm::vec3(0,0,0), 1);
+    //SphereFunction fs(glm::vec3(0,0,0), 1);
 
     //Mesh m("../test.off");
 
@@ -109,7 +121,7 @@ int main() {
     // // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
 
     //const double epsilon = 1E-6;
-    const unsigned int resX = 8; const unsigned int resY = 8; const unsigned int resZ = 8;
+    const unsigned int resX = 10; const unsigned int resY = 10; const unsigned int resZ = 10;
     minX -= (maxX - minX) / 2;
     minY -= (maxY - minY) / 2;
     minZ -= (maxZ - minZ) / 2;

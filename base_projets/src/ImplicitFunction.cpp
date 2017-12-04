@@ -577,8 +577,8 @@ glm::vec3 BarthFunction::EvalDev(glm::vec3 p) const
 }
 
 
-DistanceFunction::DistanceFunction(const char* filename) :
-    m_DS(filename)
+DistanceFunction::DistanceFunction(const char* filename, int K, float rho) :
+    m_DS(filename, K, rho)
 {
     std::cout << "Computing Tangent Planes" << std::endl;
     m_DS.ComputeTangentPlanes();

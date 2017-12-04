@@ -29,8 +29,8 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 	return a.distance < b.distance;
 }
 
-DataSet::DataSet(const char* filename) :
-	m_K(4), m_rho(0.2)
+DataSet::DataSet(const char* filename, int K, float rho) :
+	m_K(K), m_rho(rho)
 {
 
     m_graph = new Graph();
