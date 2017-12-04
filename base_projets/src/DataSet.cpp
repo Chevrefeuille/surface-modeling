@@ -30,7 +30,7 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 }
 
 DataSet::DataSet(const char* filename) :
-	m_K(12), m_rho(1)
+	m_K(12), m_rho(0.4)
 {
 
     m_graph = new Graph();

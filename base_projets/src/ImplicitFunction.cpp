@@ -633,7 +633,7 @@ float DistanceFunction::Eval(glm::vec3 p) const
         return -glm::dot((p - min_plane.getCenter()), min_plane.getNormal());
     }
     //std::cout << "INF" << std::endl;
-    return INF;
+    return INF2
 }
 
 glm::vec3 DistanceFunction::EvalDev(glm::vec3 p) const
