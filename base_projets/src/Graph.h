@@ -12,6 +12,7 @@
 #include "Plane.h"
 
 #define INF std::numeric_limits<double>::infinity()
+
 struct VertexG;
 typedef std::pair<double, VertexG*> ve;
 

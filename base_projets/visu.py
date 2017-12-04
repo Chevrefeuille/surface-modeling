@@ -32,11 +32,8 @@ for x in content:
     dy.append(x[4])
     dz.append(x[5])
 
-#normals.append([0,0,0,1,1,1])
-#normals.append([1,1,1,0.1,2,0.1])
-
 fig = plt.figure()
 ax = Axes3D(fig)
-ax.quiver(centers_x, centers_y, centers_z, dx, dy, dz, length=0.3, pivot="tail")
+ax.quiver(centers_x, centers_y, centers_z, dx, dy, dz, length=10, pivot="tail")
 ax.scatter(centers_x, centers_y, centers_z)
 plt.show()

@@ -53,7 +53,10 @@ void Mesh::ProcessTetrahedron2(const ImplicitFunction& function, const vec3 p[])
 
 	// ** Distinction des cas selon le signe des images par f des 4 points du tétrahèdre : ** //
 
-	// 1. 4 positifs (resp 4 négatifs)
+    // 0. 1 valeur au moins est null --> on quitte
+    if(b[0] == INF || b[1] == INF || b[2] == INF || b[3] == INF) { return; }
+
+    // 1. 4 positifs (resp 4 négatifs)
 	if((!b[0] && !b[1] && !b[2] && !b[3]) || (b[0] && b[1] && b[2] && b[3])) { return; }
 
 	// 2. 3 positifs et 1 négatif (resp 3 négatifs et 1 positif)
@@ -219,27 +222,38 @@ double AspectRatio(const vec3 &p1, const vec3 &p2, const vec3 &p3) {
  */
 void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned int newIndex, vector<int>& faceToDelete) {
     unsigned int n = NbFaces();
+    unsigned int nbAdjFaces = 0;
+    vector<unsigned int> indicesToReplaceIfOK;
+    vector<unsigned int> facesToDeleteIfOK;
     for (unsigned int i = 0; i < n; i++) {
         // Si le triangle contient les 2 sommets à unifier:
         if ((m_indices[3*i] == oldIndex1 || m_indices[3*i+1] == oldIndex1 || m_indices[3*i+2] == oldIndex1) &&
                 (m_indices[3*i] == oldIndex2 || m_indices[3*i+1] == oldIndex2 || m_indices[3*i+2] == oldIndex2)) {
-            faceToDelete.push_back(i);
+            facesToDeleteIfOK.push_back(i);
+            nbAdjFaces ++;
         } else {
             if (m_indices[3*i] == oldIndex1 || m_indices[3*i] == oldIndex2) {
-                m_indices[3*i] = newIndex;
+                indicesToReplaceIfOK.push_back(3*i);
             }
             if (m_indices[3*i + 1] == oldIndex1 || m_indices[3*i + 1] == oldIndex2) {
-                m_indices[3*i + 1] = newIndex;
+                indicesToReplaceIfOK.push_back(3*i+1);
             }
             if (m_indices[3*i + 2] == oldIndex1 || m_indices[3*i + 2] == oldIndex2) {
-                m_indices[3*i + 2] = newIndex;
+                indicesToReplaceIfOK.push_back(3*i+2);
             }
         }
     }
+
+    if (nbAdjFaces <= 2) { // OK (link condition)
+        for (vector<unsigned int>::iterator it = indicesToReplaceIfOK.begin(); it!=indicesToReplaceIfOK.end(); it++) {
+            m_indices[*it] = newIndex;
+        }
+        faceToDelete.insert(faceToDelete.end(), facesToDeleteIfOK.begin(), facesToDeleteIfOK.end());
+    }
 }
 
-unsigned int Mesh::postProcess(const double epsilon) {
-    //this->RemoveDouble();
+unsigned int* Mesh::postProcess(const double epsilon) {
+    this->RemoveDouble();
 
     unsigned int n = NbFaces();
     unsigned int nbCollapsedEdges = 0;
@@ -296,31 +310,34 @@ unsigned int Mesh::postProcess(const double epsilon) {
              ip2 = m_indices[indexEdge-2];
          }
 
-
          // Nouveau point = milieu des 2 anciens points
          //p3 = (m_positions[ip1] + m_positions[ip2]) / (float)2;
          //unsigned int N;
          //N = m_positions.size(); // indice du nouveau point p3
          //m_positions.push_back(p3);
 
+         // Link condition : pas plus de 2 voisins
          this->collapseEdge(ip1, ip2, ip1, faceToDelete);
      }
 
-    /* MArche pas encore
+
     // Supression des faces en trop
     uint Max = m_indices.size() + 1;
     for (vector<int>::iterator it = faceToDelete.begin(); it!=faceToDelete.end(); it++) {
         m_indices[3 * *it] = Max;
     }
+
     for (unsigned int i = 0; i < n; i++) {
         if (m_indices[3 * i] == Max) {
             m_indices.erase(m_indices.begin() + 3 * i, m_indices.begin() + 3 * i + 3);
             i--; n--;
         }
     }
-     */
 
-    return nbCollapsedEdges;
+    unsigned int returnValue[2];
+    returnValue[0] = nbCollapsedEdges;
+    returnValue[1] = faceToDelete.size();
+    return returnValue;
 }
 
 

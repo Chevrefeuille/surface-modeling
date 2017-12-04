@@ -614,7 +614,8 @@ float DistanceFunction::Eval(glm::vec3 p) const
         }
     }
     //std::cout << glm::dot((p - min_plane.getCenter()), min_plane.getNormal()) << std::endl;
-    glm::vec3 z = min_plane.getCenter() - glm::dot((p - min_plane.getCenter()), min_plane.getNormal()) * min_plane.getNormal();
+    glm::vec3 z = p - glm::dot((p - min_plane.getCenter()), min_plane.getNormal()) * min_plane.getNormal();
+    //std::cout << "Proj: " << z.x << ", " << z.y << ", " << z.z << std::endl;
     int N = m_DS.nbPoints();
     std::vector<glm::vec3> X = m_DS.getPoints();
     float min_dist = glm::distance(X[0], z);
@@ -626,10 +627,12 @@ float DistanceFunction::Eval(glm::vec3 p) const
             min_point = X[i];
         }
 	}
+    //std::cout << min_distance << std::endl;
     if (min_distance < m_DS.getRho()) {
-        return glm::dot((p - min_plane.getCenter()), min_plane.getNormal());
+        //std::cout << "NOT INF" << std::endl;
+        return -glm::dot((p - min_plane.getCenter()), min_plane.getNormal());
     }
-    std::cout << "INF" << std::endl;
+    //std::cout << "INF" << std::endl;
     return INF;
 }
 
