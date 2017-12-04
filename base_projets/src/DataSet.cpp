@@ -30,7 +30,7 @@ bool operator<(const PLANE_AND_DISTANCE& a, const PLANE_AND_DISTANCE& b)
 }
 
 DataSet::DataSet(const char* filename) :
-	m_K(4)
+	m_K(12), m_rho(0.06)
 {
 
     m_graph = new Graph();
@@ -264,5 +264,5 @@ void DataSet::AssignCostOnEdges() {
 void DataSet::AssignTangentPlanesOrientation() {
     m_graph->computeMSTwithPrim();
     m_graph->DFS(m_graph->maxZCenter, NULL);
-	m_graph->writingPlanesIntoFile();
+	//m_graph->writingPlanesIntoFile();
 }

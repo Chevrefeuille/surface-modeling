@@ -24,9 +24,12 @@ public:
     void AssignTangentPlanesOrientation();
 
     std::vector<Plane> getTangentPlanes() const {return m_tangentPlanes;};
+    std::vector<glm::vec3> getPoints() const {return m_points;};
     Graph* getGraph() const {return m_graph;}
 
     int nbPoints() const {return m_N;}
+    float getRho() const {return m_rho;}
+
     double minX() const {return min_X;};
     double minY() const {return min_Y;};
     double minZ() const {return min_Z;};
@@ -38,6 +41,7 @@ protected:
     // Attributes
     int m_N;                                    /// Number of points in the set
     int m_K;
+    float m_rho;
     std::vector<glm::vec3> m_points;             /// Container for the vertices positions
     std::vector<Plane> m_tangentPlanes;
 

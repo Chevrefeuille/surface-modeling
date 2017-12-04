@@ -94,15 +94,13 @@ void Graph::DFS(VertexG* curr, VertexG* prev) {
     }
     curr->isMarked = true;
 
-    // glm::vec3 center = curr->plane.getCenter();
-    // glm::vec3 normal = curr->plane.getNormal();
-    // std::ofstream myfile ("../example.txt", std::ios_base::app);
-    // if (myfile.is_open()) {
-    //     myfile << center.x << " " << center.y << " " << center.z << " " << normal.x << " " << normal.y << " " << normal.z << std::endl;
-    // }
-    // myfile.close();
-
-    //std::cout << "(" << c1.x << ", " << c1.y << ", " << c1.z << ")" << std::endl;
+    glm::vec3 center = curr->plane.getCenter();
+    glm::vec3 normal = curr->plane.getNormal();
+    std::ofstream myfile ("../example.txt", std::ios_base::app);
+    if (myfile.is_open()) {
+        myfile << center.x << " " << center.y << " " << center.z << " " << normal.x << " " << normal.y << " " << normal.z << std::endl;
+    }
+    myfile.close();
     for (std::vector<ve>::iterator it = curr->adj.begin() ; it != curr->adj.end(); ++it) {
         VertexG* u = it->second;
         if (!u->isMarked) {

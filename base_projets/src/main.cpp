@@ -63,38 +63,38 @@ int main() {
     //     glfwTerminate();
     //     exit(EXIT_FAILURE);
     // }
-
+    //
     // // GLFW Settings
     // glfwSetWindowTitle( "TP 3A Ensimag - MMMIS - Projet" );
     // glfwEnable( GLFW_STICKY_KEYS );
-
+    //
     // // GLEW Initialization
     // if (glewInit() != GLEW_OK) {
     //     cerr << "Failed to intialize GLEW:!" << endl;
     //     exit(EXIT_FAILURE);
     // }
-
+    //
     // // Soft- and Firm-ware checkings
     // const GLubyte* renderer = glGetString (GL_RENDERER);
     // const GLubyte* version = glGetString (GL_VERSION);
-
+    //
     // glfwSetMouseButtonCallback(mouse_button_callback);
     // glfwSetMousePosCallback(cursor_position_callback);
     // glfwSetMouseWheelCallback(mouse_wheel_callback);
-
+    //
     // // OpenGL Initialization
-
+    //
     // //glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
     // glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
-
+    //
     // glEnable(GL_DEPTH_TEST);
-
+    //
     // // Shader program initialization
     // GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
 
 
-    DistanceFunction f("../data/screwdriver.data");
+    DistanceFunction f("../data/max.data");
 
     //Mesh m("../test.off");
 
@@ -102,17 +102,17 @@ int main() {
     std::cout << "Evaluating Distance Function" << std::endl;
     double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
     double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
-   
+
     // // double minX = -1.; double minY = -1.; double minZ = -1.;
     // // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
 
     //const double epsilon = 1E-6;
-    double resX = 20; double resY = 20; double resZ = 20;
-    minX -= (maxX - minX) / 2; 
-    minY -= (maxY - minY) / 2; 
+    double resX = 30; double resY = 30; double resZ = 30;
+    minX -= (maxX - minX) / 2;
+    minY -= (maxY - minY) / 2;
     minZ -= (maxZ - minZ) / 2;
-    maxX += (maxX - minX) / 2; 
-    maxY += (maxY - minY) / 2; 
+    maxX += (maxX - minX) / 2;
+    maxY += (maxY - minY) / 2;
     maxZ += (maxZ - minZ) / 2;
     //
     //Mesh m; m.CreateIsoSurface(m, f, 0, minX, maxX, minY, maxY, minZ, maxZ, 20, 20, 20);
@@ -135,7 +135,7 @@ int main() {
     // o.GenBuffers();
     // o.SetMesh(&m);
     // o.SetShader(programID);
-    // //----------------------------------FIN CHANGER ICI---------------------------------------------
+    //----------------------------------FIN CHANGER ICI---------------------------------------------
 
     // GLuint PmatrixID = glGetUniformLocation(programID, "ProjectionMatrix");
     // GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");
@@ -156,7 +156,7 @@ int main() {
     // while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
     //        glfwGetWindowParam( GLFW_OPENED )        );
     // glfwTerminate();
-
+    //
     // cout << "Program ended." << endl;
     return EXIT_SUCCESS;
 }
