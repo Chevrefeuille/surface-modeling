@@ -49,7 +49,9 @@ void view_control(mat4& view_matrix, float dx);
 
 int main(int argc, char *argv[]) {
 
-    if (argc <= 3)
+    float rho;
+
+    if (argc <= 2)
 	{
 		if (argv[0])
 			std::cout << "Usage: " << argv[0] << " <file_path> <K> <rho>" << '\n';
@@ -58,7 +60,13 @@ int main(int argc, char *argv[]) {
 
 		exit(1);
 	}
+    if (argc <= 3) {
+        rho = INF2;
+    } else {
+        rho = std::atof(argv[3]);
+        std::cout << rho << std::endl;
 
+    }
     // ---------------------------------------------------------------------------------
 
     cout << "Starting program..." << endl;
@@ -106,7 +114,7 @@ int main(int argc, char *argv[]) {
 
     //--------------------------------------------------------------------------------------------
 
-    DistanceFunction f(argv[1], std::atoi(argv[2]), std::atof(argv[3]));
+    DistanceFunction f(argv[1], std::atoi(argv[2]), rho);
 
     //SphereFunction fs(glm::vec3(0,0,0), 1);
 
