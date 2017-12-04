@@ -1,11 +1,11 @@
-file = open("exampleCroped.txt", "w")
+file = open("exampleCroped.data", "w")
 
-with open("example.txt") as f:
+with open("data/bear.data") as f:
     content = f.readlines()
 
-i = 0
+i = 1
 nb_lines = 0
-step = 5
+step = 2
 for x in content:
     if i%step == 0:
         file.write(x)

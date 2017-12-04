@@ -109,7 +109,7 @@ int main() {
     // // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
 
     //const double epsilon = 1E-6;
-    const unsigned int resX = 20; const unsigned int resY = 20; const unsigned int resZ = 20;
+    const unsigned int resX = 8; const unsigned int resY = 8; const unsigned int resZ = 8;
     minX -= (maxX - minX) / 2;
     minY -= (maxY - minY) / 2;
     minZ -= (maxZ - minZ) / 2;
