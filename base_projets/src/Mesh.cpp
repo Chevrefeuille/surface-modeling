@@ -47,14 +47,19 @@ vec3 findRoot(const ImplicitFunction& function, const float isoValue, const vec3
 void Mesh::ProcessTetrahedron2(const ImplicitFunction& function, const vec3 p[]) {
 
 	// Vecteur donnant les signes des images par f de chacun des points du tétrahèdre
-	bool b[4] = {function.Eval(p[0]) > 0.0, function.Eval(p[1]) > 0.0, function.Eval(p[2]) > 0.0, function.Eval(p[3]) > 0.0};
+    float f0 = function.Eval(p[0]);
+    float f1 = function.Eval(p[1]);
+    float f2 = function.Eval(p[2]);
+    float f3 = function.Eval(p[3]);
+
+	bool b[4] = {f0 > 0.0, f1 > 0.0, f2 > 0.0, f3 > 0.0};
 
 	unsigned int N = m_positions.size();
 
 	// ** Distinction des cas selon le signe des images par f des 4 points du tétrahèdre : ** //
 
     // 0. 1 valeur au moins est null --> on quitte
-    if(b[0] == INF || b[1] == INF || b[2] == INF || b[3] == INF) { return; }
+    if(f0 == INF2 || f1 == INF2 || f2 == INF2 || f3 == INF2) { return; }
 
     // 1. 4 positifs (resp 4 négatifs)
 	if((!b[0] && !b[1] && !b[2] && !b[3]) || (b[0] && b[1] && b[2] && b[3])) { return; }
