@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
         std::cout << rho << std::endl;
 
     }
+
     // ---------------------------------------------------------------------------------
 
     cout << "Starting program..." << endl;
@@ -115,37 +116,22 @@ int main(int argc, char *argv[]) {
     //--------------------------------------------------------------------------------------------
 
     DistanceFunction f(argv[1], std::atoi(argv[2]), rho);
-
-    //SphereFunction fs(glm::vec3(0,0,0), 1);
-
+    //SphereFunction f(glm::vec3(0,0,0), 1);
     //Mesh m("../test.off");
 
     /** Mesh creation from data set and iso function **/
-    std::cout << "Evaluating Distance Function" << std::endl;
     double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
     double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
 
-    // // double minX = -1.; double minY = -1.; double minZ = -1.;
-    // // double maxX = 1.; double maxY = 1.; double maxZ = 1.;
-
-    //const double epsilon = 1E-6;
+    const double epsilon = 1E-3;
     const unsigned int resX = 10; const unsigned int resY = 10; const unsigned int resZ = 10;
-    minX -= (maxX - minX) / 2;
-    minY -= (maxY - minY) / 2;
-    minZ -= (maxZ - minZ) / 2;
-    maxX += (maxX - minX) / 2;
-    maxY += (maxY - minY) / 2;
-    maxZ += (maxZ - minZ) / 2;
-    // minX -= (maxX - minX) / (2.*resX);
-    // minY -= (maxY - minY) / (2.*resY);
-    // minZ -= (maxZ - minZ) / (2.*resZ);
-    // maxX += (maxX - minX) / (2.*resX);
-    // maxY += (maxY - minY) / (2.*resY);
-    // maxZ += (maxZ - minZ) / (2.*resZ);
-    //
-    //Mesh m; m.CreateIsoSurface(m, f, 0, minX, maxX, minY, maxY, minZ, maxZ, 20, 20, 20);
-    //
-    // //
+    minX -= (maxX - minX) / (2.);
+    minY -= (maxY - minY) / (2.);
+    minZ -= (maxZ - minZ) / (2.);
+    maxX += (maxX - minX) / (2.);
+    maxY += (maxY - minY) / (2.);
+    maxZ += (maxZ - minZ) / (2.);
+
     Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
     printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
 
@@ -153,11 +139,9 @@ int main(int argc, char *argv[]) {
     m.ComputeNormals();
     m.ColorFromNormals();
 
-    // unsigned int* collapsingValues = m.postProcess(epsilon);
-    // printf("---> Edge collapsing : %i edges and %i faces collapsed with ratio < %lf (max collapsed edges: %i)\n",
-    //        collapsingValues[0], collapsingValues[1], epsilon, m.NbFaces());
-
-    //m.write_obj("../test.off");
+    unsigned int* collapsingValues = m.postProcess(epsilon);
+    printf("---> Edge collapsing : %i edges and %i faces collapsed with ratio < %lf (max collapsed edges: %i)\n",
+           collapsingValues[0], collapsingValues[1], epsilon, m.NbFaces());
 
     Object o;
     o.GenBuffers();

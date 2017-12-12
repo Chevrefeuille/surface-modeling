@@ -259,6 +259,9 @@ void Mesh::collapseEdge(unsigned int oldIndex1, unsigned int oldIndex2, unsigned
 
 unsigned int* Mesh::postProcess(const double epsilon) {
     this->RemoveDouble();
+    this->Normalize();
+    this->ComputeNormals();
+    this->ColorFromNormals();
 
     unsigned int n = NbFaces();
     unsigned int nbCollapsedEdges = 0;

@@ -34,6 +34,6 @@ for x in content:
 
 fig = plt.figure()
 ax = Axes3D(fig)
-ax.quiver(centers_x, centers_y, centers_z, dx, dy, dz, length=10, pivot="tail")
+ax.quiver(centers_x, centers_y, centers_z, dx, dy, dz, length=0.2, pivot="tail")
 ax.scatter(centers_x, centers_y, centers_z)
 plt.show()
