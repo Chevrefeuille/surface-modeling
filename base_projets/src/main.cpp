@@ -70,48 +70,48 @@ int main(int argc, char *argv[]) {
 
     // ---------------------------------------------------------------------------------
 
-    cout << "Starting program..." << endl;
-    if( !glfwInit() )
-    {
-        cerr << "Failed to initialize GLFW!" << endl;
-        exit(EXIT_FAILURE);
-    }
-    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4); // Anti Aliasing
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3); // OpenGL 3.1
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
-    if( !glfwOpenWindow(WIDTH, HEIGHT, 0,0,0,0, 32,0, GLFW_WINDOW ) )  {
-        cerr << "GLFW failed to open OpenGL window!" << endl;
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
+    // cout << "Starting program..." << endl;
+    // if( !glfwInit() )
+    // {
+    //     cerr << "Failed to initialize GLFW!" << endl;
+    //     exit(EXIT_FAILURE);
+    // }
+    // glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4); // Anti Aliasing
+    // glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3); // OpenGL 3.1
+    // glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
+    // if( !glfwOpenWindow(WIDTH, HEIGHT, 0,0,0,0, 32,0, GLFW_WINDOW ) )  {
+    //     cerr << "GLFW failed to open OpenGL window!" << endl;
+    //     glfwTerminate();
+    //     exit(EXIT_FAILURE);
+    // }
 
-    // GLFW Settings
-    glfwSetWindowTitle( "TP 3A Ensimag - MMMIS - Projet" );
-    glfwEnable( GLFW_STICKY_KEYS );
+    // // GLFW Settings
+    // glfwSetWindowTitle( "TP 3A Ensimag - MMMIS - Projet" );
+    // glfwEnable( GLFW_STICKY_KEYS );
 
-    // GLEW Initialization
-    if (glewInit() != GLEW_OK) {
-        cerr << "Failed to intialize GLEW:!" << endl;
-        exit(EXIT_FAILURE);
-    }
+    // // GLEW Initialization
+    // if (glewInit() != GLEW_OK) {
+    //     cerr << "Failed to intialize GLEW:!" << endl;
+    //     exit(EXIT_FAILURE);
+    // }
 
-    // Soft- and Firm-ware checkings
-    const GLubyte* renderer = glGetString (GL_RENDERER);
-    const GLubyte* version = glGetString (GL_VERSION);
+    // // Soft- and Firm-ware checkings
+    // const GLubyte* renderer = glGetString (GL_RENDERER);
+    // const GLubyte* version = glGetString (GL_VERSION);
 
-    glfwSetMouseButtonCallback(mouse_button_callback);
-    glfwSetMousePosCallback(cursor_position_callback);
-    glfwSetMouseWheelCallback(mouse_wheel_callback);
+    // glfwSetMouseButtonCallback(mouse_button_callback);
+    // glfwSetMousePosCallback(cursor_position_callback);
+    // glfwSetMouseWheelCallback(mouse_wheel_callback);
 
-    // OpenGL Initialization
+    // // OpenGL Initialization
 
-    //glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
-    glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
+    // //glClearColor(0.1, 0.1, 0.1, 1.0);       /// Dark Back ground
+    // glClearColor(1.0, 1.0, 1.0, 1.0);       /// Light Back ground
 
-    glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_DEPTH_TEST);
 
-    // Shader program initialization
-    GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
+    // // Shader program initialization
+    // GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
     //--------------------------------------------------------------------------------------------
 
@@ -122,16 +122,33 @@ int main(int argc, char *argv[]) {
     /** Mesh creation from data set and iso function **/
     double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
     double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
-
     const double epsilon = 1E-3;
     const unsigned int resX = 10; const unsigned int resY = 10; const unsigned int resZ = 10;
-    minX -= (maxX - minX) / (2.);
-    minY -= (maxY - minY) / (2.);
-    minZ -= (maxZ - minZ) / (2.);
-    maxX += (maxX - minX) / (2.);
-    maxY += (maxY - minY) / (2.);
-    maxZ += (maxZ - minZ) / (2.);
-
+    minX -= (maxX - minX) / (resX);
+    minY -= (maxY - minY) / (resY);
+    minZ -= (maxZ - minZ) / (resZ);
+    maxX += (maxX - minX) / (resX);
+    maxY += (maxY - minY) / (resY);
+    maxZ += (maxZ - minZ) / (resZ);
+    double lX = maxX - minX;
+    double lY = maxY - minY;
+    double lZ = maxZ - minZ;
+    double lMax = max(lX, lY, lZ);
+    //std::cout << maxX << " " << minX << ", " << maxY << " " << minY << ", " << maxZ << " " << minZ << std::endl;
+    if (lMax != lX) {
+        minX -= (lMax - lX) / 2.0;
+        maxX += (lMax - lX) / 2.0;
+    }
+    if (lMax != lY) {
+        minY -= (lMax - lY) / 2.0;
+        maxY += (lMax - lY) / 2.0;
+    }
+    if (lMax != lZ) {
+        minZ -= (lMax - lZ) / 2.0;
+        maxZ += (lMax - lZ) / 2.0;
+    }
+    //std::cout << maxX << " " << minX << ", " << maxY << " " << minY << ", " << maxZ << " " << minZ << std::endl;
+    
     Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
     printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
 
@@ -143,38 +160,47 @@ int main(int argc, char *argv[]) {
     printf("---> Edge collapsing : %i edges and %i faces collapsed with ratio < %lf (max collapsed edges: %i)\n",
            collapsingValues[0], collapsingValues[1], epsilon, m.NbFaces());
 
-    Object o;
-    o.GenBuffers();
-    o.SetMesh(&m);
-    o.SetShader(programID);
-    // ----------------------------------FIN CHANGER ICI---------------------------------------------
+    // Object o;
+    // o.GenBuffers();
+    // o.SetMesh(&m);
+    // o.SetShader(programID);
+    // // ----------------------------------FIN CHANGER ICI---------------------------------------------
 
-    GLuint PmatrixID = glGetUniformLocation(programID, "ProjectionMatrix");
-    GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");
-    double init_time = glfwGetTime();
-    double prec_time = init_time;
-    double cur_time = init_time;
-    double speed = 2.0;
-    do{
-        glClear( GL_COLOR_BUFFER_BIT );
-        glClear( GL_DEPTH_BUFFER_BIT );
-        prec_time = cur_time;
-        cur_time = glfwGetTime() - init_time;
-        float delta_time = cur_time - prec_time;
-        view_control(view_matrix, speed * delta_time);
-        o.Draw(view_matrix, projection_matrix, VmatrixID, PmatrixID);
-        glfwSwapBuffers();
-    }
-    while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
-           glfwGetWindowParam( GLFW_OPENED )        );
-    glfwTerminate();
+    // GLuint PmatrixID = glGetUniformLocation(programID, "ProjectionMatrix");
+    // GLuint VmatrixID = glGetUniformLocation(programID, "ViewMatrix");
+    // double init_time = glfwGetTime();
+    // double prec_time = init_time;
+    // double cur_time = init_time;
+    // double speed = 2.0;
+    // do{
+    //     glClear( GL_COLOR_BUFFER_BIT );
+    //     glClear( GL_DEPTH_BUFFER_BIT );
+    //     prec_time = cur_time;
+    //     cur_time = glfwGetTime() - init_time;
+    //     float delta_time = cur_time - prec_time;
+    //     view_control(view_matrix, speed * delta_time);
+    //     o.Draw(view_matrix, projection_matrix, VmatrixID, PmatrixID);
+    //     glfwSwapBuffers();
+    // }
+    // while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
+    //        glfwGetWindowParam( GLFW_OPENED )        );
+    // glfwTerminate();
 
-    cout << "Program ended." << endl;
+    // cout << "Program ended." << endl;
     return EXIT_SUCCESS;
 }
 
 
-
+double max(double x, double y, double z)
+    {
+        double max = x;
+        if ( y > max )  
+            max = y;
+        if ( z > max )
+            max = z;
+    return max;
+     
+    } // end function maximum
 
 void view_control(mat4& view_matrix, float dx)
 {

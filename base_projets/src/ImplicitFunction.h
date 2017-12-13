@@ -239,10 +239,10 @@ public:
     virtual glm::vec3 EvalDev(glm::vec3 p) const;
 
     double minX() const {return m_DS.minX();};
-    double minY() const {return m_DS.maxX();};
-    double minZ() const {return m_DS.minY();};
-    double maxX() const {return m_DS.maxY();};
-    double maxY() const {return m_DS.minZ();};
+    double minY() const {return m_DS.minY();};
+    double minZ() const {return m_DS.minZ();};
+    double maxX() const {return m_DS.maxX();};
+    double maxY() const {return m_DS.maxY();};
     double maxZ() const {return m_DS.maxZ();};
 
 private:
