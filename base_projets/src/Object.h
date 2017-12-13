@@ -15,7 +15,7 @@ public:
     Object();
     ~Object();
 
-    void Draw(const glm::mat4& projection_matrix, const glm::mat4& view_matrix, const GLuint PmatrixID, const GLuint VmatrixID) const;
+    void Draw(const glm::mat4& projection_matrix, const glm::mat4& view_matrix, const GLuint PmatrixID, const GLuint VmatrixID, bool draw_points) const;
 
     void GenBuffers();
     void UpdateGeometryBuffers();

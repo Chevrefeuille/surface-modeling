@@ -49,9 +49,19 @@ file(
 file(
     GLOB
     source_files
-    src/*.cpp
+    src/AbstractMesh.cpp
+    src/DataSet.cpp
+    src/Graph.cpp
+    src/ImplicitFunction.cpp
+    src/Mesh.cpp
+    src/MeshHE.cpp
+    src/Object.cpp
+    src/Plane.cpp
+    src/shader.cpp
     src/*.h
 )
 
-add_executable(projet  ${shader_file} ${source_files} )
+add_executable(projet src/main.cpp ${shader_file} ${source_files} )
+add_executable(visu src/visuCloud.cpp ${shader_file} ${source_files})
+target_link_libraries(visu ${ALL_LIBS})
 target_link_libraries(projet ${ALL_LIBS})

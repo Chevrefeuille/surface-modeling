@@ -108,7 +108,7 @@ void Object::UpdateAttributeLocations()
 }
 
 
-void Object::Draw(const mat4& projection_matrix, const mat4& view_matrix, const GLuint PmatrixID, const GLuint VmatrixID) const
+void Object::Draw(const mat4& projection_matrix, const mat4& view_matrix, const GLuint PmatrixID, const GLuint VmatrixID, bool draw_points) const
 {
     // Shader program setting
     glUseProgram(m_programID);
@@ -158,14 +158,24 @@ void Object::Draw(const mat4& projection_matrix, const mat4& view_matrix, const 
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferID);
 
+    if (draw_points) {
+        // Draw points
+        glDrawElements(
+                    GL_POINTS,               // mode
+                    m_mesh->NbFaces()*3,        // count
+                    GL_UNSIGNED_INT,            // type
+                    (void*)0                    // offset
+                    );
+    } else {
+        // Draw triangles
+        glDrawElements(
+                    GL_TRIANGLES,               // mode
+                    m_mesh->NbFaces()*3,        // count
+                    GL_UNSIGNED_INT,            // type
+                    (void*)0                    // offset
+                    );
+    }
 
-    // Draw triangles
-    glDrawElements(
-                GL_TRIANGLES,               // mode
-                m_mesh->NbFaces()*3,        // count
-                GL_UNSIGNED_INT,            // type
-                (void*)0                    // offset
-                );
 
     glDisableVertexAttribArray(m_positionID);
     glDisableVertexAttribArray(m_normalID);

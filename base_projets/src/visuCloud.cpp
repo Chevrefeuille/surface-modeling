@@ -49,26 +49,7 @@ void view_control(mat4& view_matrix, float dx);
 
 int main(int argc, char *argv[]) {
 
-    float rho;
-
-    if (argc <= 2)
-	{
-		if (argv[0])
-			std::cout << "Usage: " << argv[0] << " <file_path> <K> <rho>" << '\n';
-		else
-			std::cout << "Usage: <program name> <number>" << '\n';
-
-		exit(1);
-	}
-    if (argc <= 3) {
-        rho = INF2;
-    } else {
-        rho = std::atof(argv[3]);
-        std::cout << rho << std::endl;
-
-    }
-
-    //---------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------
 
     cout << "Starting program..." << endl;
     if( !glfwInit() )
@@ -113,52 +94,13 @@ int main(int argc, char *argv[]) {
     // Shader program initialization
     GLuint programID = LoadShaders("../shader/vertex.glsl", "../shader/fragment.glsl");
 
-    //--------------------------------------------------------------------------------------------
+    //-----------------------------------------------
 
-    DistanceFunction f(argv[1], std::atoi(argv[2]), rho);
-    //SphereFunction f(glm::vec3(0,0,0), 1);
-    //Mesh m("../test.off");
-
-    /** Mesh creation from data set and iso function **/
-    double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
-    double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
-    const double epsilon = 1E-3;
-    const unsigned int resX = 10; const unsigned int resY = 10; const unsigned int resZ = 10;
-    minX -= (maxX - minX) / (resX);
-    minY -= (maxY - minY) / (resY);
-    minZ -= (maxZ - minZ) / (resZ);
-    maxX += (maxX - minX) / (resX);
-    maxY += (maxY - minY) / (resY);
-    maxZ += (maxZ - minZ) / (resZ);
-    double lX = maxX - minX;
-    double lY = maxY - minY;
-    double lZ = maxZ - minZ;
-    double lMax = max(lX, lY, lZ);
-    //std::cout << maxX << " " << minX << ", " << maxY << " " << minY << ", " << maxZ << " " << minZ << std::endl;
-    if (lMax != lX) {
-        minX -= (lMax - lX) / 2.0;
-        maxX += (lMax - lX) / 2.0;
-    }
-    if (lMax != lY) {
-        minY -= (lMax - lY) / 2.0;
-        maxY += (lMax - lY) / 2.0;
-    }
-    if (lMax != lZ) {
-        minZ -= (lMax - lZ) / 2.0;
-        maxZ += (lMax - lZ) / 2.0;
-    }
-    //std::cout << maxX << " " << minX << ", " << maxY << " " << minY << ", " << maxZ << " " << minZ << std::endl;
-
-    Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
-    printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
+    Mesh m(argv[1]);
 
     m.Normalize();
     m.ComputeNormals();
     m.ColorFromNormals();
-
-    unsigned int* collapsingValues = m.postProcess(epsilon);
-    printf("---> Edge collapsing : %i edges and %i faces collapsed with ratio < %lf (max collapsed edges: %i)\n",
-           collapsingValues[0], collapsingValues[1], epsilon, m.NbFaces());
 
     Object o;
     o.GenBuffers();
@@ -179,7 +121,7 @@ int main(int argc, char *argv[]) {
         cur_time = glfwGetTime() - init_time;
         float delta_time = cur_time - prec_time;
         view_control(view_matrix, speed * delta_time);
-        o.Draw(view_matrix, projection_matrix, VmatrixID, PmatrixID, false);
+        o.Draw(view_matrix, projection_matrix, VmatrixID, PmatrixID, true);
         glfwSwapBuffers();
     }
     while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
@@ -191,16 +133,7 @@ int main(int argc, char *argv[]) {
 }
 
 
-double max(double x, double y, double z)
-    {
-        double max = x;
-        if ( y > max )
-            max = y;
-        if ( z > max )
-            max = z;
-    return max;
 
-    } // end function maximum
 
 void view_control(mat4& view_matrix, float dx)
 {
