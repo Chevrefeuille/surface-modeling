@@ -416,6 +416,21 @@ Mesh::Mesh(const char* filename)
     ColorFill(vec3(0.9));
 }
 
+Mesh::Mesh(DataSet ds) {
+    m_positions = ds.getPoints();
+    m_normals = vector<vec3>();
+    m_indices = vector<unsigned int>();
+    m_normals.resize(ds.nbPoints());
+    m_indices.resize(ds.nbPoints()*3);
+    int j = 0;
+    for (int i = 0; i < ds.nbPoints(); i++)
+	{
+        m_indices[j] = i;
+        m_indices[j+1] = i+1;
+        m_indices[j+2] = i + 2;
+		j += 3;
+	}
+}
 
 
 void Mesh::CreateCube(Mesh& mesh)

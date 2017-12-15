@@ -18,6 +18,7 @@ public:
     // Constructors
     Mesh(){}                        /// Empty constructor
     Mesh(const char* filename);     /// Imports a mesh from an OFF File
+    Mesh(DataSet ds);
 
     // utils
     void RemoveDouble(float epsilon = 1e-5);        /// Remove duplicated points

@@ -96,11 +96,10 @@ int main(int argc, char *argv[]) {
 
     //-----------------------------------------------
 
-    Mesh m(argv[1]);
+    DataSet ds(argv[1], 0, 0);
+    Mesh m(ds);
 
     m.Normalize();
-    m.ComputeNormals();
-    m.ColorFromNormals();
 
     Object o;
     o.GenBuffers();
@@ -131,8 +130,6 @@ int main(int argc, char *argv[]) {
     cout << "Program ended." << endl;
     return EXIT_SUCCESS;
 }
-
-
 
 
 void view_control(mat4& view_matrix, float dx)
