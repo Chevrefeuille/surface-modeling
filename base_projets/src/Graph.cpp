@@ -17,7 +17,6 @@ void Graph::addVertex(const Plane& p)
     vertices_map::iterator search =  work->find(p);
     if (search ==  work->end())
     {
-        //std::cout << "New Vertex (" << coordinates.x << ", " << coordinates.y << ", " << coordinates.z << ")" << std::endl;
         VertexG *v;
         v = new VertexG(p, INF, false, NULL, false);
         (*work)[p] = v;
@@ -35,9 +34,7 @@ void Graph::addEdge(const Plane& from, const Plane& to, double cost)
     std::pair<double, VertexG *> edge = std::make_pair(cost, t);
     if (std::find(f->adj.begin(), f->adj.end(), edge) == f->adj.end()) {
         f->adj.push_back(edge);
-        //std::cout << "Adding edge" << std::endl;
     } else {
-        //std::cout << "Edge already exists" << std::endl;
     }
 }
 
@@ -54,18 +51,13 @@ void Graph::computeMSTwithPrim() {
     queue.push(start);
     while (!queue.empty()) {
         VertexG* t = queue.top();
-        //std::cout << "priority : " << t->coordinates.x << " " << t->coordinates.y << " " << t->coordinates.z << std::endl;
-        //std::cout << "priority : " << t-> cost << std::endl;
+
         queue.pop();
         t->isInMST = true;
         for (std::vector<ve>::iterator it = t->adj.begin() ; it != t->adj.end(); ++it) {
             VertexG* u = it->second;
             double dist = it->first;
             if (!u->isInMST && u->cost > dist) {
-                //std::cout << t->plane.getCenter().x << " " << t->plane.getCenter().y << " " << t->plane.getCenter().z << std::endl;
-                //std::cout << u->plane.getCenter().x << " " << u->plane.getCenter().y << " " << u->plane.getCenter().z << std::endl;
-                //std::cout << it->first << std::endl;
-                //std::cout << std::endl;
                 u->cost = it->first;
                 u->prev = t;
                 queue.push(u);
@@ -96,11 +88,6 @@ void Graph::DFS(VertexG* curr, VertexG* prev) {
 
     glm::vec3 center = curr->plane.getCenter();
     glm::vec3 normal = curr->plane.getNormal();
-    std::ofstream myfile ("../example.txt", std::ios_base::app);
-    if (myfile.is_open()) {
-        myfile << center.x << " " << center.y << " " << center.z << " " << normal.x << " " << normal.y << " " << normal.z << std::endl;
-    }
-    myfile.close();
     for (std::vector<ve>::iterator it = curr->adj.begin() ; it != curr->adj.end(); ++it) {
         VertexG* u = it->second;
         if (!u->isMarked) {
@@ -128,7 +115,7 @@ void Graph::printGraph() {
 
 void Graph::writingPlanesIntoFile() {
     vertices_map::iterator itr;
-    std::ofstream myfile ("../example.txt", std::ios::out);
+    std::ofstream myfile ("../planes.data", std::ios::out);
     if (myfile.is_open()){
         for (itr = work->begin(); itr !=  work->end(); itr++) {
             glm::vec3 center = itr->second->plane.getCenter();

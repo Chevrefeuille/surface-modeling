@@ -123,6 +123,8 @@ int main(int argc, char *argv[]) {
     double minX = f.minX(); double minY = f.minY(); double minZ = f.minZ();
     double maxX = f.maxX(); double maxY = f.maxY(); double maxZ = f.maxZ();
     const double epsilon = 1E-3;
+
+    // computing maximums and minimums to use in marching cube algorithm
     const unsigned int resX = 10; const unsigned int resY = 10; const unsigned int resZ = 10;
     minX -= (maxX - minX) / (resX);
     minY -= (maxY - minY) / (resY);
@@ -134,7 +136,6 @@ int main(int argc, char *argv[]) {
     double lY = maxY - minY;
     double lZ = maxZ - minZ;
     double lMax = max(lX, lY, lZ);
-    //std::cout << maxX << " " << minX << ", " << maxY << " " << minY << ", " << maxZ << " " << minZ << std::endl;
     if (lMax != lX) {
         minX -= (lMax - lX) / 2.0;
         maxX += (lMax - lX) / 2.0;
@@ -147,7 +148,6 @@ int main(int argc, char *argv[]) {
         minZ -= (lMax - lZ) / 2.0;
         maxZ += (lMax - lZ) / 2.0;
     }
-    //std::cout << maxX << " " << minX << ", " << maxY << " " << minY << ", " << maxZ << " " << minZ << std::endl;
 
     Mesh m(f, minX, maxX, minY, maxY, minZ, maxZ, resX, resY, resZ);
     printf("---> Mesh Created with %i point positions and %i faces\n", m.NbVertices(), m.NbFaces());
@@ -156,6 +156,8 @@ int main(int argc, char *argv[]) {
     m.ComputeNormals();
     m.ColorFromNormals();
 
+
+    // post processing of the mesh
     unsigned int* collapsingValues = m.postProcess(epsilon);
     printf("---> Edge collapsing : %i edges and %i faces collapsed with ratio < %lf (max collapsed edges: %i)\n",
            collapsingValues[0], collapsingValues[1], epsilon, m.NbFaces());
