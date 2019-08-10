@@ -42,7 +42,7 @@ Le paramètre de cet exécutable est :
 - pour générer un fichier `sphere.data` dans le dossier `data` à partir d'un fichier `.off` contenu dans le dossier `models`:
 
 ```{bash}
-> python3 data/sphere.data
+> python3 OFFtoData.py data/sphere.data
 ```
 
 - pour générer une sphère bruitée:

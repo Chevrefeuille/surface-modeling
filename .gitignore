@@ -1,5 +1,4 @@
 build/
-.*
-!.gitignore
-CMakeLists.txt
-example.txt
+models/
+.DS_Store
+.vscode
